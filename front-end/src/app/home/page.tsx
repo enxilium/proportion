@@ -38,7 +38,7 @@ export default function Home() {
   };
   
   return (
-    <div className="bg-[#FBAB7E] bg-gradient-to-[62deg] from-[#FBAB7E] to-[#F7CE68] overflow-hidden">
+    <div className="overflow-hidden bg-gradient-to-r from-[#ff4e50] to-[#f9d423]">
       <Navbar />
       
       {isPollingOpen && (
@@ -62,7 +62,7 @@ export default function Home() {
             title="Weekly Mood"
             data={[65, 70, 85, 60, 75, 80, 90]}
             labels={['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']}
-            color="#4ECDC4"
+            color="#75085a"
           />
           <Clock goodStart={20} goodPercent={30} />
           <StatGraph 
