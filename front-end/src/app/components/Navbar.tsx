@@ -2,11 +2,12 @@
 import React, { useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import defaultImage from '../../../public/assets/person.svg'
+import logoutImage from '../../../public/assets/power-button.svg'
 import logo from '../../../public/assets/logo.svg'
+import { useRouter } from 'next/navigation'
 
 export const Navbar:React.FC = () => {
-
+    const router = useRouter();
     return (
         <div className="navbar bg-white bg-opacity-50 flex flex-row items-center justify-between w-full">
             <Link href="/"><Image className="-ml-3" src={logo} alt="logo" width={280} height={80}/></Link>
@@ -23,8 +24,10 @@ export const Navbar:React.FC = () => {
                 <button className="btn btn-ghost text-white text-lg font-medium">
                     <Link href="/check-in">Check-in</Link>
                 </button>
-                <button className="btn btn-ghost btn-sm h-[44px] w-[44px] btn-circle flex items-center justify-center mb-1">
-                    <Image src={defaultImage} alt="defaultImg" width={36} height={36}/>
+                <button className="btn btn-ghost btn-sm h-[44px] w-[44px] btn-circle flex items-center justify-center mb-1"
+                    onClick={() => router.push('/auth/logout')}
+                >
+                    <Image src={logoutImage} alt="logoutImg" width={36} height={36}/>
                 </button>
             </div>
 
