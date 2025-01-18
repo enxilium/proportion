@@ -2,6 +2,12 @@ import type { NextRequest } from "next/server";
 import { auth0 } from "./lib/auth0";
 
 export async function middleware(request: NextRequest) {
+  if (request.nextUrl.pathname === "/") {
+    const session = await auth0.getSession(request);
+    if (session) {
+      return Response.redirect(new URL("/home", request.url));
+    }
+  }
   return await auth0.middleware(request);
 }
 

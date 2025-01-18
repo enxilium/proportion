@@ -2,8 +2,9 @@
 import React, { useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import defaultImage from '@/app/assets/person.svg'
-import logo from '@/app/assets/logo.svg'
+import defaultImage from '../../../public/assets/person.svg'
+import logo from '../../../public/assets/logo.svg'
+
 export const Navbar:React.FC = () => {
 
     return (

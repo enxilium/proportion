@@ -2,6 +2,8 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
+import { auth0 } from "@/lib/auth0";
+
 interface Question {
   id: number;
   text: string;
