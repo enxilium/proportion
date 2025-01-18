@@ -59,6 +59,7 @@ const PollingModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
   const [isClosing, setIsClosing] = useState(false);
 
   const handleClose = () => {
+    setCurrentQuestion(0);
     setIsClosing(true);
     setTimeout(() => {
       onClose();
