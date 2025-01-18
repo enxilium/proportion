@@ -25,6 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Chat } from "../components/Chat";
 
 export default function Home() {
   const router = useRouter();
