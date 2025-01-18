@@ -11,7 +11,23 @@ export default function Home() {
   const router = useRouter();
   const [isPollingOpen, setIsPollingOpen] = useState(false);
   const [hasLoggedToday, setHasLoggedToday] = useState(false);
+  const [currentTime, setCurrentTime] = useState('');
   
+  // Add time update effect
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date();
+      const hours = now.getHours().toString().padStart(2, '0');
+      const minutes = now.getMinutes().toString().padStart(2, '0');
+      setCurrentTime(`${hours}:${minutes}`);
+    };
+
+    updateTime(); // Initial update
+    const interval = setInterval(updateTime, 60000); // Update every minute
+
+    return () => clearInterval(interval);
+  }, []);
+
   // Simulate API call to check if user has logged today
   useEffect(() => {
     const checkDailyLog = async () => {
@@ -38,7 +54,14 @@ export default function Home() {
   };
   
   return (
-    <div className="overflow-hidden bg-gradient-to-r from-[#ff4e50] to-[#f9d423]">
+    <div className="overflow-hidden bg-gradient-to-r from-[#ff4e50] to-[#f9d423] relative">
+      {/* Add background time display */}
+      <div className="fixed inset-0 flex items-center justify-center pointer-events-none z-0">
+        <div className="text-white/10 text-[45vw] font-bold select-none">
+          {currentTime}
+        </div>
+      </div>
+
       <Navbar />
       
       {isPollingOpen && (
