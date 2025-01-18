@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "framer-motion": "^11.18.1",
+    "next": "15.1.5",
     "@auth0/nextjs-auth0": "^4.0.0-beta.14",
     "@eslint/config-array": "^0.18.0",
     "mongodb": "^6.12.0",
