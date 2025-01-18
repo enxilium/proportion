@@ -57,6 +57,7 @@ const PollingModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
   const [currentEmojiIndex, setCurrentEmojiIndex] = useState(2);
   const [journalEntry, setJournalEntry] = useState('');
   const [isClosing, setIsClosing] = useState(false);
+  const [responses, setResponses] = useState<Record<number, number | string>>({});
 
   const handleClose = () => {
     setCurrentQuestion(0);
@@ -68,11 +69,13 @@ const PollingModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
   };
 
   const handleSubmitJournal = () => {
+    console.log('Poll Responses:', responses);
     setCurrentQuestion(0);
     setIsClosing(true);
     setTimeout(() => {
       onClose();
       setIsClosing(false);
+      setResponses({});
     }, 700);
   };
 
@@ -85,13 +88,27 @@ const PollingModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
   };
 
   const handleSliderChange = (event: Event, newValue: number | number[]) => {
-    setSliderValue(newValue as number);
+    const value = Array.isArray(newValue) ? newValue[0] : newValue;
+    setSliderValue(value);
+    setResponses(prev => ({
+      ...prev,
+      [questions[currentQuestion].id]: value
+    }));
     requestAnimationFrame(() => {
-      const newEmojiIndex = getEmojiForValue(newValue as number);
+      const newEmojiIndex = getEmojiForValue(value);
       if (newEmojiIndex !== currentEmojiIndex) {
         setCurrentEmojiIndex(newEmojiIndex);
       }
     });
+  };
+
+  const handleJournalChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newValue = e.target.value;
+    setJournalEntry(newValue);
+    setResponses(prev => ({
+      ...prev,
+      [questions[currentQuestion].id]: newValue
+    }));
   };
 
   const handleNext = () => {
@@ -115,6 +132,20 @@ const PollingModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
     window.addEventListener('keypress', handleKeyPress);
     return () => window.removeEventListener('keypress', handleKeyPress);
   }, [currentQuestion, onClose]);
+
+  useEffect(() => {
+    if (questions[currentQuestion].type === 'slider') {
+      setResponses(prev => ({
+        ...prev,
+        [questions[currentQuestion].id]: sliderValue
+      }));
+    } else if (questions[currentQuestion].type === 'journal') {
+      setResponses(prev => ({
+        ...prev,
+        [questions[currentQuestion].id]: ''
+      }));
+    }
+  }, [currentQuestion]);
 
   if (!isOpen) return null;
 
@@ -185,7 +216,7 @@ const PollingModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
                   <div className="w-full flex flex-col items-center gap-4">
                     <textarea
                       value={journalEntry}
-                      onChange={(e) => setJournalEntry(e.target.value)}
+                      onChange={handleJournalChange}
                       className="w-full h-64 p-6 rounded-2xl border-2 border-white/30 bg-white/10 backdrop-blur-lg 
                       focus:border-white/50 focus:ring-2 focus:ring-white/20 resize-none text-white text-xl
                       placeholder:text-white/50"
