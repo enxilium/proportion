@@ -4,6 +4,7 @@ import Navbar from "@/app/components/Navbar";
 import Clock from "@/app/components/Clock";
 import { useState, useEffect } from "react";
 import PollingModal from "@/app/components/Polling";
+import StatGraph from "@/app/components/StatGraph";
 
 export default function Home() {
   const [isPollingOpen, setIsPollingOpen] = useState(false);
@@ -35,7 +36,7 @@ export default function Home() {
   };
   
   return (
-    <div className="bg-orange-300 overflow-hidden">
+    <div className="bg-[#FBAB7E] bg-gradient-to-[62deg] from-[#FBAB7E] to-[#F7CE68] overflow-hidden">
       <Navbar />
       
       {isPollingOpen && (
@@ -47,12 +48,36 @@ export default function Home() {
       
       <div className={`flex h-[calc(100vh-96px)] ${isPollingOpen ? 'pointer-events-none' : ''} z-30 flex-col items-center justify-center gap-8`}>
         <button 
-          className="bg-white px-8 py-4 rounded-lg text-2xl font-bold shadow-lg hover:bg-gray-100 transition-colors"
+          className="bg-white/90 px-10 py-5 rounded-2xl text-2xl font-bold shadow-xl hover:bg-white/95 
+          transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-2xl
+          text-[#2d2d2d] border border-white/20"
           onClick={() => setIsPollingOpen(true)}
         >
           {hasLoggedToday ? 'Edit Daily Log' : 'Do Your Daily Log'}
         </button>
-        <Clock goodStart={20} goodPercent={30} />
+        <div className="flex items-center gap-8">
+          <StatGraph 
+            title="Weekly Mood"
+            data={[65, 70, 85, 60, 75, 80, 90]}
+            labels={['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']}
+            color="#4ECDC4"
+          />
+          <Clock goodStart={20} goodPercent={30} />
+          <StatGraph 
+            title="Time Efficiency"
+            data={[80, 65, 75, 85, 70, 60, 85]}
+            labels={['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']}
+            color="#FF6B6B"
+          />
+        </div>
+        <button 
+          className="bg-white/70 px-8 py-3 rounded-xl text-lg font-semibold shadow-lg hover:bg-white/80 
+          transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-xl
+          text-[#2d2d2d] border border-white/20"
+          onClick={() => {/* TODO: Add stats navigation */}}
+        >
+          View Detailed Analytics
+        </button>
       </div>
       
       <PollingModal isOpen={isPollingOpen} onClose={handleClose} />
