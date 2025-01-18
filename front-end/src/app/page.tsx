@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 interface Question {
   id: number;
   text: string;
@@ -9,7 +10,7 @@ interface Question {
   max?: number;
 }
 const questions: Question[] = [
-  {
+  { 
     id: 1,
     text: 'What is your age?',
     type: 'number',
@@ -36,6 +37,7 @@ const MONTHS_IN_YEAR = 12;
 const HOURS_IN_DAY = 24;
 const DAYS_IN_MONTH = 30.44; // Average days in a month
 export default function Home() {
+  const router = useRouter();
   const [currentQuestion, setCurrentQuestion] = useState(-1); // Start at -1 for name input
   const [answers, setAnswers] = useState<number[]>([]);
   const [showCandles, setShowCandles] = useState(false);
@@ -234,9 +236,28 @@ export default function Home() {
                     className="w-full bg-transparent border-b-2 border-current text-3xl text-center focus:outline-none"
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
-                    onKeyDown={handleKeyDown}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        if (e.shiftKey) {
+                          router.push('/login');
+                          return;
+                        }
+                        if (inputValue.trim()) {
+                          setName(inputValue.trim());
+                          setInputValue('');
+                          setCurrentQuestion(0);
+                        }
+                      }
+                    }}
                     autoFocus
                   />
+                  <motion.p 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 0.5 }}
+                    className="mt-8 text-2xl opacity-50"
+                  >
+                    Press Enter to continue, Shift+Enter to skip
+                  </motion.p>
                 </motion.div>
               )}
             </motion.div>
@@ -293,7 +314,7 @@ export default function Home() {
                               transition={{ duration: 0.5 }}
                               className="mt-8 px-6 py-3 bg-white text-black rounded-full text-xl hover:bg-gray-100 transition-colors"
                               onClick={() => {
-                                // Handle button click
+                                router.push('/login');
                               }}
                             >
                               get started
