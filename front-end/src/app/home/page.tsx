@@ -5,8 +5,10 @@ import Clock from "@/app/components/Clock";
 import { useState, useEffect } from "react";
 import PollingModal from "@/app/components/Polling";
 import StatGraph from "@/app/components/StatGraph";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const router = useRouter();
   const [isPollingOpen, setIsPollingOpen] = useState(false);
   const [hasLoggedToday, setHasLoggedToday] = useState(false);
   
@@ -74,7 +76,7 @@ export default function Home() {
           className="bg-white/70 px-8 py-3 rounded-xl text-lg font-semibold shadow-lg hover:bg-white/80 
           transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-xl
           text-[#2d2d2d] border border-white/20"
-          onClick={() => {/* TODO: Add stats navigation */}}
+          onClick={() => {router.push('/analytics')}}
         >
           View Detailed Analytics
         </button>
