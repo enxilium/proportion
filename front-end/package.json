@@ -9,10 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "framer-motion": "^11.18.1",
-    "next": "15.1.5",
     "@auth0/nextjs-auth0": "^4.0.0-beta.14",
     "@eslint/config-array": "^0.18.0",
+    "framer-motion": "^11.18.1",
     "mongodb": "^6.12.0",
     "next": "15.1.5",
     "react": "^19.0.0",
@@ -23,6 +22,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "daisyui": "^4.12.23",
     "eslint": "^9",
     "eslint-config-next": "15.1.5",
     "postcss": "^8",
