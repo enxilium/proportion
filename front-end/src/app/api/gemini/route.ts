@@ -19,8 +19,8 @@ export async function POST(request: Request) {
     // 3. Get response from Gemini
     const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ 
-      model: 'gemini-pro', 
-      systemInstruction: 'You are a supportive and educational mentor on productivity. Provide personalized advice to the user based on their queries.'
+      model: 'gemini-2.0-flash-exp', 
+      systemInstruction: 'You are a supportive and educational mentor on productivity. Provide personalized advice to the user based on their queries.',
     });
     const result = await model.generateContent(text);
     const response = await result.response;

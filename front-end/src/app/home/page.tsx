@@ -218,7 +218,7 @@ export default function Home() {
   const [quote, setQuote] = useState('');
   useEffect(() => {
     const fetchQuote = async () => {
-      const response = await getGeminiResponse("Generate me a short motivational quote that enhances productivity.");
+      const response = await getGeminiResponse("Generate me a short motivational quote, no more than 12 words, that enhances productivity. Return ONLY the quote and nothing else.");
       setQuote(response);
     };
 
