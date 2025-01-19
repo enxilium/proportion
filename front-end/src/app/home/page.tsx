@@ -36,6 +36,7 @@ interface JournalEntry {
   efficiency?: number;
 }
 import { Chat } from "../components/Chat";
+import { getGeminiResponse } from "@/lib/gemini";
 
 export default function Home() {
   const router = useRouter();
@@ -214,6 +215,16 @@ export default function Home() {
     setRemoveDialogOpen(false);
   };
 
+  const [quote, setQuote] = useState('');
+  useEffect(() => {
+    const fetchQuote = async () => {
+      const response = await getGeminiResponse("Generate me a short motivational quote that enhances productivity.");
+      setQuote(response);
+    };
+
+    fetchQuote();
+  }, []);
+
   return (
     <div className="relative bg-black overflow-hidden min-h-screen">
       <div className="absolute inset-0 bg-[url('/assets/images/background.png')] bg-cover bg-center opacity-50" />
@@ -240,6 +251,7 @@ export default function Home() {
               </div>
             </div>
             <div className="flex-1 flex flex-col items-center gap-4">
+              <p className="text-2xl font-bold text-white animate-fade duration-300 font-['Caveat'] text-center ">{quote}</p>
               <Clock goodStart={20} goodPercent={30} />
               <button className="bg-white/90 px-10 py-5 rounded-2xl text-2xl font-bold shadow-xl hover:bg-[#dddddd] transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-2xl text-[#2d2d2d] border border-white/20" onClick={() => setIsPollingOpen(true)}>
                 {hasLoggedToday ? 'Do Your Daily Log' : 'Do Your Daily Log'}
