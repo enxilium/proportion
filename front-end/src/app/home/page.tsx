@@ -18,6 +18,13 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 export default function Home() {
   const router = useRouter();
@@ -26,6 +33,15 @@ export default function Home() {
   const [currentTime, setCurrentTime] = useState('');
   const [milestoneTitle, setMilestoneTitle] = useState("");
   const [milestoneDate, setMilestoneDate] = useState("");
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
+  const [selectedMilestone, setSelectedMilestone] = useState("");
+  // Placeholder milestones data - will come from API later
+  const [milestones, setMilestones] = useState([
+    { id: '1', title: 'Learn React' },
+    { id: '2', title: 'Complete Project' },
+    { id: '3', title: 'Exercise Daily' },
+  ]);
   
   // Add time update effect
   useEffect(() => {
@@ -60,6 +76,22 @@ export default function Home() {
     checkDailyLog();
   }, []);
 
+  // Add this effect to fetch milestones when component mounts
+  useEffect(() => {
+    const fetchMilestones = async () => {
+      try {
+        // TODO: Replace with actual API call
+        // const response = await fetch('/api/milestones');
+        // const data = await response.json();
+        // setMilestones(data);
+      } catch (error) {
+        console.error('Error fetching milestones:', error);
+      }
+    };
+
+    fetchMilestones();
+  }, []);
+
   const handleClose = () => {
     setIsPollingOpen(false);
     // After closing the modal, update the logged status
@@ -68,11 +100,34 @@ export default function Home() {
 
   const handleMilestoneSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Check if both fields are filled
+    if (!milestoneTitle || !milestoneDate) {
+      return; // Don't proceed if fields are empty
+    }
+    
     // TODO: Handle milestone submission
     console.log({ milestoneTitle, milestoneDate });
     // Reset form
     setMilestoneTitle("");
     setMilestoneDate("");
+    // Close the dialog
+    setDialogOpen(false);
+  };
+
+  const handleRemoveMilestone = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedMilestone) return;
+
+    // TODO: Handle milestone removal via API
+    console.log('Removing milestone:', selectedMilestone);
+    
+    // Update local state (remove from list)
+    setMilestones(milestones.filter(m => m.id !== selectedMilestone));
+    
+    // Reset and close dialog
+    setSelectedMilestone("");
+    setRemoveDialogOpen(false);
   };
   
   return (
@@ -126,7 +181,7 @@ export default function Home() {
           View Detailed Analytics
         </button>
         
-        <Dialog>
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
             <Button variant="outline" className="bg-white/70 px-8 py-3 rounded-xl text-lg font-semibold shadow-lg hover:bg-white/80 
               transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-xl
@@ -145,7 +200,7 @@ export default function Home() {
               <div className="grid gap-4 py-4">
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="title" className="text-right">
-                    Title
+                    Goal
                   </Label>
                   <Input
                     id="title"
@@ -153,11 +208,12 @@ export default function Home() {
                     onChange={(e) => setMilestoneTitle(e.target.value)}
                     className="col-span-3"
                     placeholder="Enter milestone title"
+                    required
                   />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="date" className="text-right">
-                    Date
+                    Deadline
                   </Label>
                   <Input
                     id="date"
@@ -165,11 +221,54 @@ export default function Home() {
                     value={milestoneDate}
                     onChange={(e) => setMilestoneDate(e.target.value)}
                     className="col-span-3"
+                    required
                   />
                 </div>
               </div>
               <DialogFooter>
                 <Button type="submit">Add Milestone</Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={removeDialogOpen} onOpenChange={setRemoveDialogOpen}>
+          <DialogTrigger asChild>
+            <Button variant="outline" className="bg-white/70 px-8 py-3 rounded-xl text-lg font-semibold shadow-lg hover:bg-white/80 
+              transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-xl
+              text-[#2d2d2d] border border-white/20">
+              Remove Milestone
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Remove Milestone</DialogTitle>
+              <DialogDescription>
+                Select a milestone to remove from your tracking list.
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleRemoveMilestone}>
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="milestone" className="text-right">
+                    Milestone
+                  </Label>
+                  <Select value={selectedMilestone} onValueChange={setSelectedMilestone}>
+                    <SelectTrigger className="col-span-3">
+                      <SelectValue placeholder="Select a milestone" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {milestones.map((milestone) => (
+                        <SelectItem key={milestone.id} value={milestone.id}>
+                          {milestone.title}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <DialogFooter>
+                <Button type="submit" variant="destructive">Remove Milestone</Button>
               </DialogFooter>
             </form>
           </DialogContent>
