@@ -50,7 +50,17 @@ const StyledSlider = styled(Slider)({
   },
 });
 
-const PollingModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
+const PollingModal = ({ isOpen, onClose, onSubmit }: { 
+  isOpen: boolean; 
+  onClose: () => void;
+  onSubmit: (data: { 
+    mood: number;
+    efficiency: number;
+    journal: string;
+    title: string;
+    timestamp: string;  // Add timestamp to match JournalEntry
+  }) => void;
+}) => {
   const router = useRouter();
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [sliderValue, setSliderValue] = useState(50);
@@ -68,15 +78,40 @@ const PollingModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
     }, 300);
   };
 
-  const handleSubmitJournal = () => {
-    console.log('Poll Responses:', responses);
-    setCurrentQuestion(0);
-    setIsClosing(true);
-    setTimeout(() => {
-      onClose();
-      setIsClosing(false);
+  const handleSubmitJournal = async () => {
+    try {
+      const today = new Date();
+      const formattedDate = today.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+
+      const pollData = {
+        mood: Number(responses[1]) || 50,
+        efficiency: Number(responses[2]) || 50,
+        journal: journalEntry,
+        title: formattedDate, // Use today's date as title
+        timestamp: today.toISOString()
+      };
+
+      // Call the onSubmit prop with the new data
+      onSubmit(pollData);
+
+      // Reset states
+      setCurrentQuestion(0);
+      setIsClosing(true);
+      setJournalEntry('');
       setResponses({});
-    }, 700);
+      
+      setTimeout(() => {
+        onClose();
+        setIsClosing(false);
+      }, 300);
+
+    } catch (error) {
+      console.error('Error submitting poll:', error);
+    }
   };
 
   const getEmojiForValue = (value: number) => {
