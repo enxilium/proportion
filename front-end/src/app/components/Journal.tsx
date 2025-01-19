@@ -7,11 +7,8 @@ import { Label } from "@/components/ui/label";
 
 interface JournalEntry {
   id: string;
-  title: string;
   content: string;
   date: string;
-  mood?: number;
-  efficiency?: number;
 }
 
 interface JournalProps {
@@ -33,7 +30,6 @@ export default function Journal({ isOpen, onClose, entries, onCreateEntry }: Jou
     if (!newEntry.title || !newEntry.content) return;
 
     onCreateEntry({
-      title: newEntry.title,
       content: newEntry.content
     });
 
@@ -57,20 +53,13 @@ export default function Journal({ isOpen, onClose, entries, onCreateEntry }: Jou
               Create New Entry
             </Button>
             <div className="space-y-2 max-h-[60vh] overflow-y-auto">
-              {entries.map((entry) => (
+              {entries.map((entry, index) => (
                 <div 
-                  key={entry.id}
+                  key={index}
                   onClick={() => setSelectedEntry(entry)}
                   className="p-3 bg-white/10 rounded-lg cursor-pointer hover:bg-white/20"
                 >
-                  <h3 className="font-bold">{entry.title}</h3>
                   <p className="text-sm text-white/70">{entry.date}</p>
-                  {entry.mood !== undefined && entry.efficiency !== undefined && (
-                    <div className="flex gap-4 mt-1 text-xs text-white/60">
-                      <span>Mood: {entry.mood}%</span>
-                      <span>Efficiency: {entry.efficiency}%</span>
-                    </div>
-                  )}
                 </div>
               ))}
             </div>
@@ -106,14 +95,7 @@ export default function Journal({ isOpen, onClose, entries, onCreateEntry }: Jou
 
         {selectedEntry && (
           <div className="space-y-4">
-            <h2 className="text-xl font-bold">{selectedEntry.title}</h2>
             <p className="text-sm text-white/70">{selectedEntry.date}</p>
-            {selectedEntry.mood !== undefined && selectedEntry.efficiency !== undefined && (
-              <div className="flex gap-4 text-sm text-white/70">
-                <span>Mood: {selectedEntry.mood}%</span>
-                <span>Efficiency: {selectedEntry.efficiency}%</span>
-              </div>
-            )}
             <p className="whitespace-pre-wrap">{selectedEntry.content}</p>
             <DialogFooter>
               <Button onClick={() => setSelectedEntry(null)}>Back to List</Button>

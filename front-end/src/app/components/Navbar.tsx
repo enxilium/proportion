@@ -34,12 +34,6 @@ export const Navbar:React.FC = () => {
                 </div>
 
                 <div className='hover:bg-black/30 h-full px-4'>
-                    <button className="btn btn-ghost text-white text-lg font-medium h-full">
-                        <Link href="/analytics">Analytics</Link>
-                    </button>
-                </div>
-
-                <div className='hover:bg-black/30 h-full px-4'>
                     <button className="btn btn-ghost btn-sm h-[44px] w-[44px] btn-circle flex items-center justify-center mb-1"
                         onClick={() => router.push('/auth/logout')}
                     >
