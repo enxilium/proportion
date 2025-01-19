@@ -183,7 +183,7 @@ export default function Home() {
         
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
-            <Button variant="outline" className="bg-white/70 px-8 py-3 rounded-xl text-lg font-semibold shadow-lg hover:bg-white/80 
+            <Button variant="outline" className="bg-white/50 px-8 py-3 rounded-xl text-lg font-semibold shadow-lg hover:bg-white/60 
               transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-xl
               text-[#2d2d2d] border border-white/20">
               Add Milestone
@@ -234,7 +234,7 @@ export default function Home() {
 
         <Dialog open={removeDialogOpen} onOpenChange={setRemoveDialogOpen}>
           <DialogTrigger asChild>
-            <Button variant="outline" className="bg-white/70 px-8 py-3 rounded-xl text-lg font-semibold shadow-lg hover:bg-white/80 
+            <Button variant="outline" className="bg-white/50 px-8 py-3 rounded-xl text-lg font-semibold shadow-lg hover:bg-white/60 
               transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-xl
               text-[#2d2d2d] border border-white/20">
               Remove Milestone
