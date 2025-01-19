@@ -2,7 +2,7 @@
 import Image from "next/image";
 import Navbar from "@/app/components/Navbar";
 import Clock from "@/app/components/Clock";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import PollingModal from "@/app/components/Polling";
 import StatGraph from "@/app/components/StatGraph";
 import { useRouter } from "next/navigation";
@@ -97,6 +97,21 @@ export default function Home() {
     // After closing the modal, update the logged status
     setHasLoggedToday(true);
   };
+  
+  const data = useMemo(() => ({
+    labels: Array.from({ length: 7 }).map((_, i) => {
+      const date = new Date();
+      date.setDate(date.getDate() - (6 - i));
+      return (date.getMonth() + 1).toString() + '/' + date.getDate().toString();
+    }),
+    datasets: [{
+      data: [65, 59, 80, 81, 56, 20, 80],
+      fill: false,
+      label: '',
+      borderColor: '#EF7C24',
+      backgroundColor: '#EC6D10',
+    }],
+  }), [hasLoggedToday]);
 
   const handleMilestoneSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -129,153 +144,137 @@ export default function Home() {
     setSelectedMilestone("");
     setRemoveDialogOpen(false);
   };
-  
+
   return (
-    <div className="overflow-hidden bg-gradient-to-r from-[#ff4e50] to-[#f9d423] relative">
-      {/* Add background time display */}
+    <div className="relative bg-black overflow-hidden min-h-screen">
+      <div className="absolute inset-0 bg-[url('/assets/images/background.png')] bg-cover bg-center opacity-50" />
       <div className="fixed inset-0 flex items-center justify-center pointer-events-none z-0">
-        <div className="text-white/10 text-[45vw] font-bold select-none">
+        <div className="text-white/10 text-[50vw] font-sans select-none flex items-center justify-center pr-32">
           {currentTime}
         </div>
       </div>
-
-      <Navbar />
-      
-      {isPollingOpen && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity duration-300" 
-          style={{ opacity: isPollingOpen ? 1 : 0 }}
-        />
-      )}
-      
-      <div className={`flex h-[calc(100vh-96px)] ${isPollingOpen ? 'pointer-events-none' : ''} z-30 flex-col items-center justify-center gap-8`}>
-        <button 
-          className="bg-white/90 px-10 py-5 rounded-2xl text-2xl font-bold shadow-xl hover:bg-white/95 
-          transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-2xl
-          text-[#2d2d2d] border border-white/20"
-          onClick={() => setIsPollingOpen(true)}
-        >
-          {hasLoggedToday ? 'Edit Daily Log' : 'Do Your Daily Log'}
-        </button>
-        <div className="flex items-center gap-8">
-          <StatGraph 
-            title="Weekly Mood"
-            data={[65, 70, 85, 60, 75, 80, 90]}
-            labels={['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']}
-            color="#75085a"
+      <div className="relative z-10">
+        <Navbar />
+        {isPollingOpen && (
+          <div 
+            className="fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity duration-300" 
+            style={{ opacity: isPollingOpen ? 1 : 0 }}
           />
-          <Clock goodStart={20} goodPercent={30} />
-          <StatGraph 
-            title="Time Efficiency"
-            data={[80, 65, 75, 85, 70, 60, 85]}
-            labels={['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']}
-            color="#FF6B6B"
-          />
-        </div>
-        <button 
-          className="bg-white/70 px-8 py-3 rounded-xl text-lg font-semibold shadow-lg hover:bg-white/80 
-          transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-xl
-          text-[#2d2d2d] border border-white/20"
-          onClick={() => {router.push('/analytics')}}
-        >
-          View Detailed Analytics
-        </button>
+        )}
         
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogTrigger asChild>
-            <Button variant="outline" className="bg-white/50 px-8 py-3 rounded-xl text-lg font-semibold shadow-lg hover:bg-white/60 
-              transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-xl
-              text-[#2d2d2d] border border-white/20">
-              Add Milestone
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>Add New Milestone</DialogTitle>
-              <DialogDescription>
-                Set a new milestone to track your progress.
-              </DialogDescription>
-            </DialogHeader>
-            <form onSubmit={handleMilestoneSubmit}>
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="title" className="text-right">
-                    Goal
-                  </Label>
-                  <Input
-                    id="title"
-                    value={milestoneTitle}
-                    onChange={(e) => setMilestoneTitle(e.target.value)}
-                    className="col-span-3"
-                    placeholder="Enter milestone title"
-                    required
-                  />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="date" className="text-right">
-                    Deadline
-                  </Label>
-                  <Input
-                    id="date"
-                    type="date"
-                    value={milestoneDate}
-                    onChange={(e) => setMilestoneDate(e.target.value)}
-                    className="col-span-3"
-                    required
-                  />
-                </div>
+        <div className={`flex h-[calc(100vh-96px)] ${isPollingOpen ? 'pointer-events-none' : ''} z-30 items-center justify-center`}>
+          <div className="flex justify-between w-full p-8">
+            <div className="flex-1 flex flex-col items-start">
+              <div className="bg-[#3a3a3a]/90 rounded-xl border-white/20 hover:border-white/50 border-2 p-4 pl-0">
+                <StatGraph data={data} title="Mood Tracker" />
               </div>
-              <DialogFooter>
-                <Button type="submit">Add Milestone</Button>
-              </DialogFooter>
-            </form>
-          </DialogContent>
-        </Dialog>
+            </div>
+            <div className="flex-1 flex flex-col items-center gap-4">
+              <Clock goodStart={20} goodPercent={30} />
+              <button className="bg-white/90 px-10 py-5 rounded-2xl text-2xl font-bold shadow-xl hover:bg-[#dddddd] transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-2xl text-[#2d2d2d] border border-white/20" onClick={() => setIsPollingOpen(true)}>
+                {hasLoggedToday ? 'Edit Daily Log' : 'Do Your Daily Log'}
+              </button>
+              
+            </div>
+            <div className="flex-1 flex flex-col gap-4 items-end">
+              <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" className="bg-white px-8 py-3 rounded-xl text-lg font-semibold shadow-lg hover:bg-[#dddddd]
+                    transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-xl
+                    text-[#2d2d2d] border border-white/20">
+                    Add Milestone
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px] bg-white/25 text-white font-secondary">
+                  <DialogHeader>
+                    <DialogTitle>Add New Milestone</DialogTitle>
+                    <DialogDescription>
+                      Set a new milestone to track your progress.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <form onSubmit={handleMilestoneSubmit}>
+                    <div className="grid gap-4 py-4">
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="title" className="text-right">
+                          Goal
+                        </Label>
+                        <Input
+                          id="title"
+                          value={milestoneTitle}
+                          onChange={(e) => setMilestoneTitle(e.target.value)}
+                          className="col-span-3"
+                          placeholder="Enter milestone title"
+                          required
+                        />
+                      </div>
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="date" className="text-right">
+                          Deadline
+                        </Label>
+                        <Input
+                          id="date"
+                          type="date"
+                          value={milestoneDate}
+                          onChange={(e) => setMilestoneDate(e.target.value)}
+                          className="col-span-3"
+                          required
+                        />
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button type="submit">Add Milestone</Button>
+                    </DialogFooter>
+                  </form>
+                </DialogContent>
+              </Dialog>
 
-        <Dialog open={removeDialogOpen} onOpenChange={setRemoveDialogOpen}>
-          <DialogTrigger asChild>
-            <Button variant="outline" className="bg-white/50 px-8 py-3 rounded-xl text-lg font-semibold shadow-lg hover:bg-white/60 
-              transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-xl
-              text-[#2d2d2d] border border-white/20">
-              Remove Milestone
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>Remove Milestone</DialogTitle>
-              <DialogDescription>
-                Select a milestone to remove from your tracking list.
-              </DialogDescription>
-            </DialogHeader>
-            <form onSubmit={handleRemoveMilestone}>
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="milestone" className="text-right">
-                    Milestone
-                  </Label>
-                  <Select value={selectedMilestone} onValueChange={setSelectedMilestone}>
-                    <SelectTrigger className="col-span-3">
-                      <SelectValue placeholder="Select a milestone" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {milestones.map((milestone) => (
-                        <SelectItem key={milestone.id} value={milestone.id}>
-                          {milestone.title}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <DialogFooter>
-                <Button type="submit" variant="destructive">Remove Milestone</Button>
-              </DialogFooter>
-            </form>
-          </DialogContent>
-        </Dialog>
+              <Dialog open={removeDialogOpen} onOpenChange={setRemoveDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" className="bg-white px-8 py-3 rounded-xl text-lg font-semibold shadow-lg hover:bg-[#dddddd] 
+                    transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-xl
+                    text-[#2d2d2d] border border-white/20">
+                    Remove Milestone
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px] bg-white/25 text-white font-secondary">
+                  <DialogHeader>
+                    <DialogTitle>Remove Milestone</DialogTitle>
+                    <DialogDescription>
+                      Select a milestone to remove from your tracking list.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <form onSubmit={handleRemoveMilestone}>
+                    <div className="grid gap-4 py-4">
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="milestone" className="text-right">
+                          Milestone
+                        </Label>
+                        <Select value={selectedMilestone} onValueChange={setSelectedMilestone}>
+                          <SelectTrigger className="col-span-3">
+                            <SelectValue placeholder="Select a milestone" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {milestones.map((milestone) => (
+                              <SelectItem key={milestone.id} value={milestone.id} className="font-secondary text-black bg-white hover:bg-[#dddddd]">
+                                {milestone.title}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button type="submit" variant="destructive" className="bg-[#e11d48] hover:bg-[#be123c]">Remove Milestone</Button>
+                    </DialogFooter>
+                  </form>
+                </DialogContent>
+              </Dialog>
+            </div>
+          </div>
+        </div>
+        
+        <PollingModal isOpen={isPollingOpen} onClose={handleClose} />
       </div>
-      
-      <PollingModal isOpen={isPollingOpen} onClose={handleClose} />
     </div>
   );
 }

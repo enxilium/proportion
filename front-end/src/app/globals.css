@@ -3,12 +3,27 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  html {
+    font-family: var(--font-caveat);
+  }
+  
+  body {
+    font-family: var(--font-caveat);
+  }
+}
+
 :root {
   --font-caveat: 'Caveat', cursive;
 }
 
 .font-caveat {
   font-family: var(--font-caveat);
+}
+
+.font-secondary {
+  font-family: 'Roboto', sans-serif;
+  font-weight: 300;
 }
 
 @keyframes flicker {
@@ -165,14 +180,5 @@ input[type="number"] {
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
-  }
-}
-
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
   }
 }

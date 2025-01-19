@@ -184,7 +184,7 @@ export const Clock: React.FC<ClockProps> = ({ goodStart, goodPercent }) => {
                         transition: 'opacity 5s, transform 0.3s ease-in-out, fill 0.3s ease-in-out',
                         transform: isGoodHovered ? 'scale(1.07)' : 'scale(1)',
                         transformOrigin: 'center',
-                        fill: isGoodHovered ? 'rgba(0, 255, 0, 1)' : 'rgba(0, 255, 0, 0.28)',
+                        fill: isGoodHovered ? 'rgba(210, 210, 210, 1)' : 'rgba(255, 255, 255, 0.15)',
                         zIndex: isGoodHovered ? 100 : 0,
                     }}
                 />
@@ -201,7 +201,7 @@ export const Clock: React.FC<ClockProps> = ({ goodStart, goodPercent }) => {
                         transform: isBadHovered ? 'scale(1.07)' : 'scale(1)',
                         transformOrigin: 'center',
                         transition: 'opacity 5s, transform 0.3s ease-in-out, fill 0.3s ease-in-out',
-                        fill: isBadHovered ? 'rgba(255, 0, 0, 1)' : 'rgba(255, 0, 0, 0.28)',
+                        fill: isBadHovered ? 'rgba(0, 0, 0, 1)' : 'rgba(0, 0, 0, 0.55)',
                         zIndex: isBadHovered ? 100 : 0,
                     }}
                 />
