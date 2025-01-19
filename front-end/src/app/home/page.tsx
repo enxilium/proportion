@@ -242,7 +242,7 @@ export default function Home() {
             <div className="flex-1 flex flex-col items-center gap-4">
               <Clock goodStart={20} goodPercent={30} />
               <button className="bg-white/90 px-10 py-5 rounded-2xl text-2xl font-bold shadow-xl hover:bg-[#dddddd] transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-2xl text-[#2d2d2d] border border-white/20" onClick={() => setIsPollingOpen(true)}>
-                {hasLoggedToday ? 'Edit Daily Log' : 'Do Your Daily Log'}
+                {hasLoggedToday ? 'Do Your Daily Log' : 'Do Your Daily Log'}
               </button>
               <button 
                 className="bg-white/90 px-10 py-5 rounded-2xl text-2xl font-bold shadow-xl hover:bg-[#dddddd] transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-2xl text-[#2d2d2d] border border-white/20"
