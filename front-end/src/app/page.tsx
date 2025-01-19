@@ -57,11 +57,8 @@ export default function Home() {
     222 - darknessLevel * 222
   )}, ${Math.round(179 - darknessLevel * 179)})`;
   useEffect(() => {
-    // Show "First, tell us your name" after 2 seconds
-    const timer = setTimeout(() => {
-      setShowNameInput(true);
-    }, 2000);
-    return () => clearTimeout(timer);
+    // Remove this timeout since we'll control visibility with CSS
+    setShowNameInput(true);
   }, []);
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
@@ -204,7 +201,7 @@ export default function Home() {
       darknessLevel > 0.6 ? 'text-white' : 'text-black'
     }`}>
       <motion.div
-        className="absolute inset-0 -z-10"
+        className="fixed inset-0 -z-10"
         initial={{ backgroundColor: "#f5e6c3" }}
         animate={{ backgroundColor }}
         transition={{ duration: 1 }}
@@ -221,47 +218,51 @@ export default function Home() {
             >
               <motion.h1 
                 className="text-6xl"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
               >
                 Welcome.
               </motion.h1>
-              {showNameInput && (
-                <motion.div
-                  className="space-y-4"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                >
-                  <h2 className="text-4xl">First, tell us your name.</h2>
-                  <input
-                    type="text"
-                    className="w-full bg-transparent border-b-2 border-current text-3xl text-center focus:outline-none"
-                    value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        if (e.shiftKey) {
-                          router.push('/login');
-                          return;
-                        }
-                        if (inputValue.trim()) {
-                          setName(inputValue.trim());
-                          setInputValue('');
-                          setCurrentQuestion(0);
-                        }
+              <motion.div
+                className="space-y-4"
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: showNameInput ? 1 : 0, y: showNameInput ? 0 : 12 }}
+                transition={{ 
+                  duration: 0.8, 
+                  ease: "easeOut",
+                  delay: showNameInput ? 2 : 0 
+                }}
+              >
+                <h2 className="text-4xl">First, tell us your name.</h2>
+                <input
+                  type="text"
+                  className="w-full bg-transparent border-b-2 border-current text-3xl text-center focus:outline-none"
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      if (e.shiftKey) {
+                        router.push('/login');
+                        return;
                       }
-                    }}
-                    autoFocus
-                  />
-                  <motion.p 
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 0.5 }}
-                    className="mt-8 text-2xl opacity-50"
-                  >
-                    Press Enter to continue, Shift+Enter to skip
-                  </motion.p>
-                </motion.div>
-              )}
+                      if (inputValue.trim()) {
+                        setName(inputValue.trim());
+                        setInputValue('');
+                        setCurrentQuestion(0);
+                      }
+                    }
+                  }}
+                  autoFocus
+                />
+                <motion.p 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 0.5 }}
+                  className="mt-8 text-2xl opacity-50"
+                >
+                  Press Enter to continue, Shift+Enter to skip
+                </motion.p>
+              </motion.div>
             </motion.div>
           ) : !showCandles ? (
             <motion.section
