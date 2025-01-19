@@ -6,12 +6,26 @@ import { useState, useEffect } from "react";
 import PollingModal from "@/app/components/Polling";
 import StatGraph from "@/app/components/StatGraph";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 
 export default function Home() {
   const router = useRouter();
   const [isPollingOpen, setIsPollingOpen] = useState(false);
   const [hasLoggedToday, setHasLoggedToday] = useState(false);
   const [currentTime, setCurrentTime] = useState('');
+  const [milestoneTitle, setMilestoneTitle] = useState("");
+  const [milestoneDate, setMilestoneDate] = useState("");
   
   // Add time update effect
   useEffect(() => {
@@ -24,7 +38,6 @@ export default function Home() {
 
     updateTime(); // Initial update
     const interval = setInterval(updateTime, 60000); // Update every minute
-
     return () => clearInterval(interval);
   }, []);
 
@@ -51,6 +64,15 @@ export default function Home() {
     setIsPollingOpen(false);
     // After closing the modal, update the logged status
     setHasLoggedToday(true);
+  };
+
+  const handleMilestoneSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // TODO: Handle milestone submission
+    console.log({ milestoneTitle, milestoneDate });
+    // Reset form
+    setMilestoneTitle("");
+    setMilestoneDate("");
   };
   
   return (
@@ -103,6 +125,55 @@ export default function Home() {
         >
           View Detailed Analytics
         </button>
+        
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="outline" className="bg-white/70 px-8 py-3 rounded-xl text-lg font-semibold shadow-lg hover:bg-white/80 
+              transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-xl
+              text-[#2d2d2d] border border-white/20">
+              Add Milestone
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Add New Milestone</DialogTitle>
+              <DialogDescription>
+                Set a new milestone to track your progress.
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleMilestoneSubmit}>
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="title" className="text-right">
+                    Title
+                  </Label>
+                  <Input
+                    id="title"
+                    value={milestoneTitle}
+                    onChange={(e) => setMilestoneTitle(e.target.value)}
+                    className="col-span-3"
+                    placeholder="Enter milestone title"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="date" className="text-right">
+                    Date
+                  </Label>
+                  <Input
+                    id="date"
+                    type="date"
+                    value={milestoneDate}
+                    onChange={(e) => setMilestoneDate(e.target.value)}
+                    className="col-span-3"
+                  />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button type="submit">Add Milestone</Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
       
       <PollingModal isOpen={isPollingOpen} onClose={handleClose} />
