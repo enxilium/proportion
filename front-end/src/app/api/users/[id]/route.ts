@@ -19,25 +19,34 @@ export async function GET(request: NextRequest) {       // GET // get name using
     }
     else if (requestType === 'get_polls') {
         if (timeFrame === 'last_week') {
-            result = await users.findOne(
-                { id: id, "daily_polls.date": { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) } },
-                { projection: { daily_polls: 1 } }
-            ); 
+            result = await users.findOne({ id: id }, { projection: { polls: 1 } });
+            console.log(result);
         }
         else if (timeFrame === 'last_month') {
-            result = await users.findOne({ id: id, "daily_polls.date": { $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } }, { projection: { daily_polls: 1 } });
+            result = await users.findOne({ id: id }, { projection: { polls: 1 } });
         }
         else if (timeFrame === 'last_year') {
-            result = await users.findOne({ id: id, "daily_polls.date": { $gte: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000) } }, { projection: { daily_polls: 1 } });
+            result = await users.findOne({ id: id }, { projection: { polls: 1 } });
         }
         else if (timeFrame === 'all_time') {
-            result = await users.findOne({ id: id }, { projection: { daily_polls: 1 } });
+            result = await users.findOne({ id: id }, { projection: { polls: 1 } });
         }
     }
+    else if (requestType === 'check_latest_poll') {
+        const currentDate = new Date().toISOString().split('T')[0];
+        result = await users.findOne({ id: id, "polls.date": currentDate }, { projection: { "polls.$": 1 } });
+        console.log(result);
+    }
+    else if (requestType === 'get_milestones') {
+        result = await users.findOne({ id: id }, { projection: { milestones: 1 } });
+    }
+    else if (requestType === 'get_journals') {
+        result = await users.findOne({ id: id }, { projection: { journals: 1 } });
+    }
+
     if(result && result.hasOwnProperty('_id')) {
         delete result._id;
     }
-    console.log("here", result);
     return NextResponse.json(result);
 }
 
@@ -75,7 +84,7 @@ export async function PATCH(request: Request) {   // add poll, modify poll, add 
     else if (requestData.requestType === 'delete_milestone') {
         result = await users.updateOne(
             { id: requestData.id },
-            { $pull: { milestones: { title: requestData.milestoneTitle } } } as any
+            { $pull: { milestones: { title: requestData.title } } } as any
         );
     }
     else if (requestData.requestType === 'add_journal') {
@@ -85,9 +94,6 @@ export async function PATCH(request: Request) {   // add poll, modify poll, add 
         result = { acknowledged: false };
     }
 
-
-
-    
     return NextResponse.json({ acknowledged: result.acknowledged });
 }
 

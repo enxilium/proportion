@@ -51,6 +51,7 @@ export default function Home() {
   const [showNameInput, setShowNameInput] = useState(false);
   const [showFinalMessage, setShowFinalMessage] = useState(false);
   const [showButton, setShowButton] = useState(false);
+  const [buttonVisible, setButtonVisible] = useState(false);
   // Calculate background color based on darkness level (0 to 1)
   const backgroundColor = `rgb(${Math.round(245 - darknessLevel * 245)}, ${Math.round(
     222 - darknessLevel * 222
@@ -192,8 +193,9 @@ export default function Home() {
     setShowFinalMessage(true);
     
     // Show button after a delay
-    await new Promise(resolve => setTimeout(resolve, 1500));
     setShowButton(true);
+    await new Promise(resolve => setTimeout(resolve, 3000));
+    setButtonVisible(true);
   };
   return (
     <div className={`min-h-screen p-8 flex flex-col items-center justify-center font-caveat ${
@@ -236,7 +238,7 @@ export default function Home() {
                 <h2 className="text-4xl">First, tell us your name.</h2>
                 <input
                   type="text"
-                  className="w-full bg-transparent border-b-2 border-current text-3xl text-center focus:outline-none"
+                  className="w-full font-caveat bg-transparent border-b-2 border-current text-3xl text-center focus:outline-none"
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                   onKeyDown={(e) => {
@@ -274,7 +276,7 @@ export default function Home() {
               <h2 className="text-4xl">{questions[currentQuestion].text}</h2>
               <input
                 type="number"
-                className="w-full bg-transparent border-b-2 border-current text-3xl text-center focus:outline-none"
+                className="w-full font-caveat bg-transparent border-b-2 border-current text-3xl text-center focus:outline-none"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyDown={handleKeyDown}
@@ -291,7 +293,7 @@ export default function Home() {
               key="candles"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="w-full max-w-full text-center"
+              className={`w-full max-w-full text-center`}
             >
               <AnimatePresence mode="wait">
                 <div className="relative w-full max-w-full text-center">
@@ -299,13 +301,13 @@ export default function Home() {
                     <AnimatePresence mode="wait">
                       {showFinalMessage ? (
                         <motion.div 
-                          className="flex flex-col items-center justify-center space-y-8"
+                          className="fixed inset-0 flex flex-col items-center justify-center space-y-8 bg-black bg-opacity-90 z-50"
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
-                          transition={{ duration: 0.5 }}
+                          transition={{ duration: 0.5, delay: 0.5 }}
                         >
                           <motion.div 
-                            className="text-4xl text-white"
+                            className="text-6xl text-white text-center px-4"
                           >
                             Don't waste it all.
                           </motion.div>
@@ -314,7 +316,7 @@ export default function Home() {
                               initial={{ opacity: 0 }}
                               animate={{ opacity: 1 }}
                               transition={{ duration: 0.5 }}
-                              className="mt-8 px-6 py-3 bg-white text-black rounded-full text-xl hover:bg-gray-100 transition-colors"
+                              className={`mt-7 px-8 py-3 bg-white text-black rounded-full text-xl hover:bg-gray-100 transition-colors ${buttonVisible ? 'opacity-100' : 'opacity-0'} transition-opacity duration-1000`}
                               onClick={() => {
                                 router.push('/login');
                               }}
@@ -338,7 +340,7 @@ export default function Home() {
                       )}
                     </AnimatePresence>
                   </div>
-                  <div className="w-full max-w-full overflow-hidden px-2">
+                  <div className={`w-full max-w-full overflow-hidden ${showFinalMessage ? 'opacity-0' : 'opacity-100'} transition-opacity duration-1000 px-2`}>
                     <div className="candles-grid">
                       {Array(calculateRemainingMonths(answers[0])).fill(null).map((_, index) => (
                         <motion.div

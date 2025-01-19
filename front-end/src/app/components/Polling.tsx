@@ -50,15 +50,19 @@ const StyledSlider = styled(Slider)({
   },
 });
 
-const PollingModal = ({ isOpen, onClose, onSubmit }: { 
+const PollingModal = ({ isOpen, onClose, onSubmit, userID }: { 
   isOpen: boolean; 
   onClose: () => void;
+  userID: string;
   onSubmit: (data: { 
-    mood: number;
-    efficiency: number;
+    poll: {
+      date: string;
+      questions: {
+        question: string;
+        response: number;
+      }[];
+    };
     journal: string;
-    title: string;
-    timestamp: string;  // Add timestamp to match JournalEntry
   }) => void;
 }) => {
   const router = useRouter();
@@ -81,18 +85,18 @@ const PollingModal = ({ isOpen, onClose, onSubmit }: {
   const handleSubmitJournal = async () => {
     try {
       const today = new Date();
-      const formattedDate = today.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      });
+      // Format date as YYYY-MM-DD
+      const formattedDate = today.toISOString().split('T')[0];
 
       const pollData = {
-        mood: Number(responses[1]) || 50,
-        efficiency: Number(responses[2]) || 50,
+        poll: {
+          date: formattedDate,
+          questions: questions.map(q => ({
+            question: q.question,
+            response: Number(responses[q.id])
+          }))
+        },
         journal: journalEntry,
-        title: formattedDate, // Use today's date as title
-        timestamp: today.toISOString()
       };
 
       // Call the onSubmit prop with the new data
