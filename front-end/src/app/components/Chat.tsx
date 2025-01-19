@@ -13,7 +13,7 @@ export const Chat = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
-      content: "Hi! I'm here to help you make the most of your time. What would you like to know?",
+      content: "Welcome. How are you feeling today?",
       isUser: false,
       timestamp: new Date()
     }
