@@ -35,6 +35,7 @@ interface JournalEntry {
   mood?: number;
   efficiency?: number;
 }
+import { Chat } from "../components/Chat";
 
 export default function Home() {
   const router = useRouter();
@@ -358,6 +359,12 @@ export default function Home() {
           entries={journalEntries}
           onCreateEntry={handleCreateJournalEntry}
         />
+      </div>
+      <div className="fixed bottom-4 right-4 z-50">
+        <Chat />
+      </div>
+      <div className="fixed bottom-4 right-4 z-50">
+        <Chat />
       </div>
     </div>
   );

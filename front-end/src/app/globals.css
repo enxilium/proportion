@@ -10,7 +10,8 @@
   }
   
   body {
-    font-family: "Proxima Nova", sans-serif;
+    font-family: var(--font-caveat);
+    overflow: hidden; /* Prevent scrolling */
   }
 }
 
