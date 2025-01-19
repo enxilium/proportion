@@ -26,6 +26,9 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import Journal from "@/app/components/Journal";
+import Snowfall from "@/app/components/Snowflake";
+import { Chat } from "../components/Chat";
+import { getGeminiResponse } from "@/lib/gemini";
 
 interface JournalEntry {
   id: string;
@@ -35,8 +38,6 @@ interface JournalEntry {
   mood?: number;
   efficiency?: number;
 }
-import { Chat } from "../components/Chat";
-import { getGeminiResponse } from "@/lib/gemini";
 
 export default function Home() {
   const router = useRouter();
@@ -228,6 +229,7 @@ export default function Home() {
   return (
     <div className="relative bg-black overflow-hidden min-h-screen">
       <div className="absolute inset-0 bg-[url('/assets/images/background.png')] bg-cover bg-center opacity-50" />
+      <Snowfall />
       <div className="fixed inset-0 flex items-center justify-center pointer-events-none z-0">
         <div className="text-white/10 text-[50vw] font-sans select-none flex items-center justify-center pr-32">
           {currentTime}
@@ -371,9 +373,6 @@ export default function Home() {
           entries={journalEntries}
           onCreateEntry={handleCreateJournalEntry}
         />
-      </div>
-      <div className="fixed bottom-4 right-4 z-50">
-        <Chat />
       </div>
       <div className="fixed bottom-4 right-4 z-50">
         <Chat />
