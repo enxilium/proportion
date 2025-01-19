@@ -8,8 +8,8 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        caveat: ['var(--font-caveat)'],
-        sans: ['var(--font-caveat)'], // Make Caveat the default sans font
+        caveat: ['var(--font-proxima-nova)'],
+        sans: ['var(--font-proxima-nova)'], // Make Caveat the default sans font
       },
     },
   },

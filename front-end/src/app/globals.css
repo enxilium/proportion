@@ -3,22 +3,19 @@
 @tailwind components;
 @tailwind utilities;
 
+
 @layer base {
   html {
-    font-family: var(--font-caveat);
+    font-family: "Proxima Nova", sans-serif;
   }
   
   body {
-    font-family: var(--font-caveat);
+    font-family: "Proxima Nova", sans-serif;
   }
 }
 
-:root {
-  --font-caveat: 'Caveat', cursive;
-}
-
 .font-caveat {
-  font-family: var(--font-caveat);
+  font-family: var(--font-sans);
 }
 
 .font-secondary {
@@ -92,7 +89,7 @@
 
 /* Input styles */
 input {
-  font-family: var(--font-caveat);
+  font-family: "Proxima Nova", sans-serif;
 }
 
 input::placeholder {

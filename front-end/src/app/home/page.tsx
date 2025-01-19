@@ -25,6 +25,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import Journal from "@/app/components/Journal";
+
+interface JournalEntry {
+  id: string;
+  title: string;
+  content: string;
+  date: string;
+  mood?: number;
+  efficiency?: number;
+}
 
 export default function Home() {
   const router = useRouter();
@@ -36,6 +46,7 @@ export default function Home() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
   const [selectedMilestone, setSelectedMilestone] = useState("");
+  const [isJournalOpen, setIsJournalOpen] = useState(false);
   // Placeholder milestones data - will come from API later
   const [milestones, setMilestones] = useState([
     { id: '1', title: 'Learn React' },
@@ -43,6 +54,18 @@ export default function Home() {
     { id: '3', title: 'Exercise Daily' },
   ]);
   
+  const [moodData, setMoodData] = useState<number[]>([65, 59, 80, 81, 56, 20, 80]);
+  const [efficiencyData, setEfficiencyData] = useState<number[]>([65, 59, 80, 81, 40, 40, 40]);
+  const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([
+    {
+      id: '1',
+      title: 'First Entry',
+      content: 'This is my first journal entry...',
+      date: '2024-03-20'
+    }
+  ]);
+  const [showJournals, setShowJournals] = useState(false);
+
   // Add time update effect
   useEffect(() => {
     const updateTime = () => {
@@ -98,20 +121,65 @@ export default function Home() {
     setHasLoggedToday(true);
   };
   
-  const data = useMemo(() => ({
+  const handleCreateJournalEntry = (entryData: Omit<JournalEntry, 'id' | 'date'>) => {
+    const newEntry: JournalEntry = {
+      ...entryData,
+      id: Date.now().toString(),
+      date: new Date().toISOString().split('T')[0]
+    };
+    setJournalEntries(prev => [newEntry, ...prev]);
+  };
+
+  const handlePollSubmit = (pollData: any) => {
+    // Update mood data
+    setMoodData(prev => [...prev.slice(1), pollData.mood]);
+    
+    // Update efficiency data
+    setEfficiencyData(prev => [...prev.slice(1), pollData.efficiency]);
+    
+    // Add poll data as journal entry
+    const newJournalEntry: JournalEntry = {
+      id: Date.now().toString(),
+      title: pollData.title,
+      content: pollData.journal,
+      date: new Date(pollData.timestamp).toISOString().split('T')[0],
+      mood: pollData.mood,
+      efficiency: pollData.efficiency
+    };
+    
+    setJournalEntries(prev => [newJournalEntry, ...prev]);
+  };
+
+  // Update the data object to use state variables
+  const data = {
     labels: Array.from({ length: 7 }).map((_, i) => {
       const date = new Date();
       date.setDate(date.getDate() - (6 - i));
       return (date.getMonth() + 1).toString() + '/' + date.getDate().toString();
     }),
     datasets: [{
-      data: [65, 59, 80, 81, 56, 20, 80],
-      fill: false,
       label: '',
+      data: moodData,
+      fill: false,
       borderColor: '#EF7C24',
       backgroundColor: '#EC6D10',
-    }],
-  }), [hasLoggedToday]);
+    }]
+  };
+
+  const data2 = {
+    labels: Array.from({ length: 7 }).map((_, i) => {
+      const date = new Date();
+      date.setDate(date.getDate() - (6 - i));
+      return (date.getMonth() + 1).toString() + '/' + date.getDate().toString();
+    }),
+    datasets: [{
+      label: '',
+      data: efficiencyData,
+      fill: false,
+      borderColor: '#EF7C24',
+      backgroundColor: '#EC6D10',
+    }]
+  };
 
   const handleMilestoneSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -167,6 +235,7 @@ export default function Home() {
             <div className="flex-1 flex flex-col items-start">
               <div className="bg-[#3a3a3a]/90 rounded-xl border-white/20 hover:border-white/50 border-2 p-4 pl-0">
                 <StatGraph data={data} title="Mood Tracker" />
+                <StatGraph data={data2} title="Time Efficiency" />
               </div>
             </div>
             <div className="flex-1 flex flex-col items-center gap-4">
@@ -174,7 +243,12 @@ export default function Home() {
               <button className="bg-white/90 px-10 py-5 rounded-2xl text-2xl font-bold shadow-xl hover:bg-[#dddddd] transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-2xl text-[#2d2d2d] border border-white/20" onClick={() => setIsPollingOpen(true)}>
                 {hasLoggedToday ? 'Edit Daily Log' : 'Do Your Daily Log'}
               </button>
-              
+              <button 
+                className="bg-white/90 px-10 py-5 rounded-2xl text-2xl font-bold shadow-xl hover:bg-[#dddddd] transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-2xl text-[#2d2d2d] border border-white/20"
+                onClick={() => setIsJournalOpen(true)}
+              >
+                Journal
+              </button>
             </div>
             <div className="flex-1 flex flex-col gap-4 items-end">
               <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -273,7 +347,17 @@ export default function Home() {
           </div>
         </div>
         
-        <PollingModal isOpen={isPollingOpen} onClose={handleClose} />
+        <PollingModal 
+          isOpen={isPollingOpen} 
+          onClose={() => setIsPollingOpen(false)}
+          onSubmit={handlePollSubmit}
+        />
+        <Journal 
+          isOpen={isJournalOpen} 
+          onClose={() => setIsJournalOpen(false)}
+          entries={journalEntries}
+          onCreateEntry={handleCreateJournalEntry}
+        />
       </div>
     </div>
   );
