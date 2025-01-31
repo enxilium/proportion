@@ -99,8 +99,7 @@ export async function getName(request: getNameRequest) {
         requestType: request.requestType,
         id: request.id
     });
-    const baseUrl = process.env.APP_BASE_URL || 'http://localhost:3000';
-    const response = await fetch(`${baseUrl}/api/users/${request.id}?${params}`);
+    const response = await fetch(`/api/users/${request.id}?${params}`);
     return response;
 }
 
@@ -144,8 +143,7 @@ export async function getJournals(request: getJournalsRequest) {
 
 
 export async function addUser(request: addUserRequest) {
-    const baseUrl = process.env.APP_BASE_URL || 'http://localhost:3000';
-    const response = await fetch(`${baseUrl}/api/users/${request.id}`, {
+    const response = await fetch(`/api/users/${request.id}`, {
         method: 'POST',
         body: JSON.stringify(request)
     });

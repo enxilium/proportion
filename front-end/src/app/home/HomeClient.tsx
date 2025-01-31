@@ -75,7 +75,6 @@ const HomeClient: React.FC<{ userID: string }> = ({ userID }) => {
       date: new Date().toISOString().split('T')[0]
     });
     const data = await response.json();
-    console.log(data);
     if (data != null) {
       setHasLoggedToday(true);
     }
@@ -306,9 +305,6 @@ const HomeClient: React.FC<{ userID: string }> = ({ userID }) => {
   const handleRemoveMilestone = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedMilestone) return;
-
-    // TODO: Handle milestone removal via API
-    console.log('Removing milestone:', selectedMilestone);
     
     // Reset and close dialog
     deleteMilestone({

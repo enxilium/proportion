@@ -8,7 +8,6 @@ export default async function LoginPage() {
   
   if (session) {
     const storedName = cookieStore.get('onboardingName');
-    console.log('Cookie found:', storedName); // Debug log
     
     if (storedName?.value) {
       try {
