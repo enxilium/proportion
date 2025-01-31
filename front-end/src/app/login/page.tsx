@@ -1,5 +1,13 @@
+import { redirect } from "next/navigation";
+import { auth0 } from "@/lib/auth0";
 
 export default async function LoginPage() {
+
+  const session = await auth0.getSession();
+  if (session) {
+    redirect("/home");
+  }
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#eb8d62] to-[#c76d4c] [animation:fadeIn_0.5s_ease-in]">
