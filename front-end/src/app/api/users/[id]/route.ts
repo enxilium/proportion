@@ -12,9 +12,13 @@ export async function GET(request: NextRequest) {       // GET // get name using
     
     const searchParams = request.nextUrl.searchParams;
     const requestType = searchParams.get('requestType');
-    const id = searchParams.get('id') as unknown as Condition<ObjectId>;
+    const id = searchParams.get('id');
     const timeFrame = searchParams.get('timeFrame');
     
+    if (!id || !requestType) {
+        return NextResponse.json({ error: 'Missing parameters' }, { status: 400 });
+    }
+
     let result;
     if (requestType === 'get_name') {
         result = await users.findOne({ id: id }, { projection: { name: 1, _id: 0 } });

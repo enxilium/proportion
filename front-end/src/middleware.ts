@@ -11,7 +11,8 @@ export async function middleware(request: NextRequest) {
         try {
           const response = await getName({
             id: session.user.email as string,
-            requestType: 'get_name'
+            requestType: 'get_name',
+            baseUrl: `${request.nextUrl.protocol}//${request.nextUrl.host.split('/unknown')[0]}`
           });
           const userData = await response.json();
           
@@ -19,7 +20,8 @@ export async function middleware(request: NextRequest) {
             await addUser({
               id: session.user.email as string,
               requestType: 'add_user',
-              name: storedName.value
+              name: storedName.value,
+              baseUrl: `${request.nextUrl.protocol}//${request.nextUrl.host.split('/unknown')[0]}`
             });
           }
           request.cookies.delete('onboardingName');

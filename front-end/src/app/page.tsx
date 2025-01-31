@@ -248,7 +248,7 @@ export default function Home() {
                         return;
                       }
                       if (inputValue.trim()) {
-                        await setNameCookie({name: inputValue.trim(), requestType: 'set_name_cookie'}); 
+                        await setNameCookie({name: inputValue.trim(), requestType: 'set_name_cookie', baseUrl: window.location.origin}); 
                         setInputValue('');
                         setCurrentQuestion(0);
                       }

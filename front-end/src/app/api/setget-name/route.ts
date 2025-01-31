@@ -3,7 +3,6 @@ import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
   const { name } = await request.json();
-  console.log(name);
   const cookieStore = await cookies();
   cookieStore.set({
     name: 'onboardingName',
@@ -15,8 +14,6 @@ export async function POST(request: Request) {
     httpOnly: true
   });
 
-  const cookieRetrieved = cookieStore.get('onboardingName');
-  console.log(cookieRetrieved);
 
   return NextResponse.json({ success: true });
 

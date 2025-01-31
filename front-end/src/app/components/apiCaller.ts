@@ -1,6 +1,7 @@
 interface getNameRequest {
     id: string;
     requestType: 'get_name';
+    baseUrl: string;
 }
 
 interface getPollsRequest {
@@ -29,11 +30,13 @@ interface addUserRequest {
     id: string;
     name: string;
     requestType: 'add_user';
+    baseUrl: string;
 }
 
 interface setNameCookieRequest {
     name: string;
     requestType: 'set_name_cookie';
+    baseUrl: string;
 }
 
 interface question {
@@ -95,11 +98,9 @@ interface deleteUserRequest {
 
 
 export async function getName(request: getNameRequest) {
-    const params = new URLSearchParams({
-        requestType: request.requestType,
-        id: request.id
-    });
-    const response = await fetch(`/api/users/${request.id}?${params}`);
+    const response = await fetch(
+        `${request.baseUrl}/api/users/${request.id}?requestType=${request.requestType}&id=${encodeURIComponent(request.id)}`
+    );
     return response;
 }
 
@@ -143,7 +144,7 @@ export async function getJournals(request: getJournalsRequest) {
 
 
 export async function addUser(request: addUserRequest) {
-    const response = await fetch(`/api/users/${request.id}`, {
+    const response = await fetch(`${request.baseUrl}/api/users/${encodeURIComponent(request.id)}`, {
         method: 'POST',
         body: JSON.stringify(request)
     });
@@ -196,7 +197,7 @@ export async function addJournal(request: addJournalRequest) {
 }
 
 export async function setNameCookie(request: setNameCookieRequest) {
-    const response = await fetch(`/api/setget-name`, {
+    const response = await fetch(`${request.baseUrl}/api/setget-name`, {
         method: 'POST',
         body: JSON.stringify(request)
     });
