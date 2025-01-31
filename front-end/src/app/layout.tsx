@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Caveat } from "next/font/google";
 import "./globals.css";
-import { motion } from "framer-motion";
 
 const caveat = Caveat({
   subsets: ["latin"],

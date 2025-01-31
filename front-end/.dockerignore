@@ -1,0 +1,8 @@
+**
+
+!Dockerfile
+!.next
+!public
+!next.config.ts
+!package.json
+!package-lock.json

@@ -17,8 +17,8 @@ export const Clock: React.FC<ClockProps> = ({ goodStart, goodPercent }) => {
     const [isBadHovered, setIsBadHovered] = useState(false);
 
     const describeArc = (startAngle: number, endAngle: number): string => {
-        const radius = 220;
-        const center = 250;
+        const radius = 170;
+        const center = 185;
         const start = polarToCartesian(radius, startAngle);
         const end = polarToCartesian(radius, endAngle);
         
@@ -34,7 +34,7 @@ export const Clock: React.FC<ClockProps> = ({ goodStart, goodPercent }) => {
 
     const polarToCartesian = (radius: number, angleInDegrees: number): { x: number, y: number } => {
         const angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
-        const center = 250;
+        const center = 185;
         return {
             x: center + (radius * Math.cos(angleInRadians)),
             y: center + (radius * Math.sin(angleInRadians))
@@ -42,11 +42,12 @@ export const Clock: React.FC<ClockProps> = ({ goodStart, goodPercent }) => {
     };
 
     const describeAntiArc = (startAngle: number, endAngle: number): string => {
-        const radius = 220;
-        const center = 250;
+        const radius = 170;
+        const center = 185;
         const start = polarToCartesian(radius, endAngle);
         const end = polarToCartesian(radius, startAngle);
         
+
         const largeArcFlag = Math.abs(endAngle - startAngle) <= 180 ? "1" : "0";
         
         return [
@@ -99,23 +100,26 @@ export const Clock: React.FC<ClockProps> = ({ goodStart, goodPercent }) => {
                 goodSectorRef.current.style.pointerEvents = 'all';
             }
         }, 4500);
-    }, [goodStart, goodPercent]);
+    });
 
     return (
-        <div className="pl-2 relative w-[500px] h-[500px] flex justify-center items-center">
-            <div className="absolute w-[440px] h-[440px] rounded-full border-[3px] border-black">
+        <div className="pl-2 relative w-[370px] h-[370px] flex justify-center items-center">
+            <div className="absolute w-[340px] h-[340px] rounded-full border-[3px] border-black">
                 {[...Array(12)].map((_, i) => (
                     <div
+
+
                         key={i}
                         className={`absolute w-[3px] ${i % 3 === 0 ? 'h-7' : 'h-5'} bg-black`}
                         style={{
                             left: "50%",
                             top: 0,
                             transform: `rotate(${i*30}deg)`,
-                            transformOrigin: `center ${220-((i<=7 && i>=3) ? 2 : 0)}px`
+                            transformOrigin: `center ${170-((i<=7 && i>=3) ? 2 : 0)}px`
                         }}
                     />
                 ))}
+
                 <div>
                     <div
                         className="absolute w-[10px] h-[10px] bg-black rounded-full"
@@ -149,11 +153,12 @@ export const Clock: React.FC<ClockProps> = ({ goodStart, goodPercent }) => {
                     }}
                 />
             </div>
-            <svg className="absolute w-full h-full" viewBox="0 0 500 500">
+            <svg className="absolute w-full h-full" viewBox="0 0 370 370">
                 <path
                     d={describeArc(currentHourAngle, currentMinuteAngle)}
                     fill="rgba(0, 255, 0, 0.28)"
                     stroke="none"
+
                     style={{
                         opacity: currentHourAngle === 0 ? 0 : 1,
                         transition: 'opacity 5s, transform 0.3s ease-in-out, fill 0.3s ease-in-out',
@@ -230,7 +235,6 @@ export const Clock: React.FC<ClockProps> = ({ goodStart, goodPercent }) => {
                 <p className="font-bold text-lg">Good Time</p>
                 {isGoodHovered && (
                     <>
-                        
                         <p className="text-sm mt-2 transition-opacity duration-300">
                             Productive and fulfilling hours
                         </p>

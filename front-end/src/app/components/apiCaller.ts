@@ -31,10 +31,17 @@ interface addUserRequest {
     requestType: 'add_user';
 }
 
+interface setNameCookieRequest {
+    name: string;
+    requestType: 'set_name_cookie';
+}
+
 interface question {
     question: string;
     response: number;
 }
+
+
 
 interface poll {
     date: string;  // YYYY-MM-DD
@@ -92,7 +99,8 @@ export async function getName(request: getNameRequest) {
         requestType: request.requestType,
         id: request.id
     });
-    let response = await fetch(`/api/users/${request.id}?${params}`);
+    const baseUrl = process.env.APP_BASE_URL || 'http://localhost:3000';
+    const response = await fetch(`${baseUrl}/api/users/${request.id}?${params}`);
     return response;
 }
 
@@ -136,14 +144,12 @@ export async function getJournals(request: getJournalsRequest) {
 
 
 export async function addUser(request: addUserRequest) {
-    const response = await fetch(`/api/users/${request.id}`, {
+    const baseUrl = process.env.APP_BASE_URL || 'http://localhost:3000';
+    const response = await fetch(`${baseUrl}/api/users/${request.id}`, {
         method: 'POST',
         body: JSON.stringify(request)
     });
-
     return response;
-
-
 }
 
 export async function addPoll(request: addPollRequest) {
@@ -191,8 +197,19 @@ export async function addJournal(request: addJournalRequest) {
     return response;
 }
 
+export async function setNameCookie(request: setNameCookieRequest) {
+    const response = await fetch(`/api/setget-name`, {
+        method: 'POST',
+        body: JSON.stringify(request)
+    });
+    return response;
+}
+
+
+
 export async function deleteUser(request: deleteUserRequest) {
     const response = await fetch(`/api/users/${request.id}`, {
+
         method: 'DELETE',
         body: JSON.stringify(request)
     });

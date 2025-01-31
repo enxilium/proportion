@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
+import { setNameCookie } from '@/app/components/apiCaller';
 
 interface Question {
   id: number;
@@ -47,7 +48,6 @@ export default function Home() {
   const [inputValue, setInputValue] = useState('');
   const [error, setError] = useState('');
   const [darknessLevel, setDarknessLevel] = useState(0);
-  const [name, setName] = useState('');
   const [showNameInput, setShowNameInput] = useState(false);
   const [showFinalMessage, setShowFinalMessage] = useState(false);
   const [showButton, setShowButton] = useState(false);
@@ -64,7 +64,7 @@ export default function Home() {
     if (e.key === 'Enter') {
       if (currentQuestion === -1) {
         if (inputValue.trim()) {
-          setName(inputValue.trim());
+          localStorage.setItem('onboardingName', inputValue.trim());
           setInputValue('');
           setCurrentQuestion(0);
         }
@@ -241,17 +241,20 @@ export default function Home() {
                   className="w-full font-caveat bg-transparent border-b-2 border-current text-3xl text-center focus:outline-none"
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
-                  onKeyDown={(e) => {
+                  onKeyDown={async (e) => {
                     if (e.key === 'Enter') {
                       if (e.shiftKey) {
                         router.push('/login');
                         return;
                       }
                       if (inputValue.trim()) {
-                        setName(inputValue.trim());
+                        await setNameCookie({name: inputValue.trim(), requestType: 'set_name_cookie'}); 
                         setInputValue('');
                         setCurrentQuestion(0);
                       }
+
+
+
                     }
                   }}
                   autoFocus
@@ -309,7 +312,7 @@ export default function Home() {
                           <motion.div 
                             className="text-6xl text-white text-center px-4"
                           >
-                            Don't waste it all.
+                            Don&apos;t waste it all.
                           </motion.div>
                           {showButton && (
                             <motion.button

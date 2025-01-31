@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { Condition, ObjectId } from 'mongodb';
 import client, { connectToDatabase } from '@/lib/mongodb';
 import { NextRequest } from 'next/server';
+import { UpdateFilter, Document } from 'mongodb';
+
 
 export async function GET(request: NextRequest) {       // GET // get name using email as id
     await connectToDatabase();
@@ -15,37 +17,31 @@ export async function GET(request: NextRequest) {       // GET // get name using
     
     let result;
     if (requestType === 'get_name') {
-        result = await users.findOne({ id: id }, { projection: { name: 1 } });
+        result = await users.findOne({ id: id }, { projection: { name: 1, _id: 0 } });
     }
     else if (requestType === 'get_polls') {
         if (timeFrame === 'last_week') {
-            result = await users.findOne({ id: id }, { projection: { polls: 1 } });
-            console.log(result);
+            result = await users.findOne({ id: id }, { projection: { polls: 1, _id: 0 } });
         }
         else if (timeFrame === 'last_month') {
-            result = await users.findOne({ id: id }, { projection: { polls: 1 } });
+            result = await users.findOne({ id: id }, { projection: { polls: 1, _id: 0 } });
         }
         else if (timeFrame === 'last_year') {
-            result = await users.findOne({ id: id }, { projection: { polls: 1 } });
+            result = await users.findOne({ id: id }, { projection: { polls: 1, _id: 0 } });
         }
         else if (timeFrame === 'all_time') {
-            result = await users.findOne({ id: id }, { projection: { polls: 1 } });
+            result = await users.findOne({ id: id }, { projection: { polls: 1, _id: 0 } });
         }
     }
     else if (requestType === 'check_latest_poll') {
         const currentDate = new Date().toISOString().split('T')[0];
-        result = await users.findOne({ id: id, "polls.date": currentDate }, { projection: { "polls.$": 1 } });
-        console.log(result);
+        result = await users.findOne({ id: id, "polls.date": currentDate }, { projection: { "polls.$": 1, _id: 0 } });
     }
     else if (requestType === 'get_milestones') {
-        result = await users.findOne({ id: id }, { projection: { milestones: 1 } });
+        result = await users.findOne({ id: id }, { projection: { milestones: 1, _id: 0 } });
     }
     else if (requestType === 'get_journals') {
-        result = await users.findOne({ id: id }, { projection: { journals: 1 } });
-    }
-
-    if(result && result.hasOwnProperty('_id')) {
-        delete result._id;
+        result = await users.findOne({ id: id }, { projection: { journals: 1, _id: 0 } });
     }
     return NextResponse.json(result);
 }
@@ -84,7 +80,7 @@ export async function PATCH(request: Request) {   // add poll, modify poll, add 
     else if (requestData.requestType === 'delete_milestone') {
         result = await users.updateOne(
             { id: requestData.id },
-            { $pull: { milestones: { title: requestData.title } } } as any
+            { $pull: { milestones: { title: requestData.title } } } as unknown as UpdateFilter<Document>
         );
     }
     else if (requestData.requestType === 'add_journal') {

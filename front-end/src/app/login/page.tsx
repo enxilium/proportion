@@ -1,11 +1,28 @@
 import { auth0 } from "@/lib/auth0";
-import { redirect } from "next/navigation";
+import { cookies } from 'next/headers';
+import { addUser } from "@/app/components/apiCaller";
 
 export default async function LoginPage() {
   const session = await auth0.getSession();
-
+  const cookieStore = await cookies();
+  
   if (session) {
-    redirect("/home");
+    const storedName = cookieStore.get('onboardingName');
+    console.log('Cookie found:', storedName); // Debug log
+    
+    if (storedName?.value) {
+      try {
+        await addUser({
+          id: session.user.email as string,
+          requestType: 'add_user',
+          name: storedName.value
+        });
+        // Only delete cookie after successful user creation
+        cookieStore.delete('onboardingName');
+      } catch (error) {
+        console.error('Error creating user:', error);
+      }
+    }
   }
 
   return (

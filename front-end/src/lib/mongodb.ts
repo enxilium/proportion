@@ -1,5 +1,6 @@
 import { MongoClient, ServerApiVersion } from 'mongodb';
 
+
 const uri = "mongodb+srv://anandtandon8:IvpQhmNDdMUK7bRc@cluster0.g6am1.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -23,7 +24,6 @@ export async function connectToDatabase() {
     try {
         await client.connect();
         await client.db("primary").command({ ping: 1 });
-        console.log("Successfully connected to MongoDB.");
         isConnected = true;
     } catch (error) {
         console.error("Error connecting to MongoDB:", error);
@@ -38,7 +38,6 @@ connectToDatabase().catch(console.error);
 process.on('SIGINT', async () => {
     try {
         await client.close();
-        console.log('MongoDB connection closed through app termination');
         process.exit(0);
     } catch (err) {
         console.error('Error closing MongoDB connection:', err);

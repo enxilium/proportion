@@ -1,12 +1,10 @@
 'use client'
 
-import Image from "next/image";
 import Navbar from "@/app/components/Navbar";
 import Clock from "@/app/components/Clock";
 import { useState, useEffect, useMemo } from "react";
 import PollingModal from "@/app/components/Polling";
 import StatGraph from "@/app/components/StatGraph";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -29,7 +27,7 @@ import {
 import Journal from "@/app/components/Journal";
 import { Chat } from "../components/Chat";
 import { getGeminiResponse } from "@/lib/gemini";
-import { getName, getPolls, checkLatestPoll, addUser, addPoll, modifyPoll, addMilestone, deleteMilestone, deleteUser, addJournal, getMilestones, getJournals } from '@/app/components/apiCaller';
+import { getName, getPolls, checkLatestPoll, addPoll, addMilestone, deleteMilestone, addJournal, getMilestones, getJournals } from '@/app/components/apiCaller';
 import { memo } from 'react';
 
 
@@ -44,7 +42,6 @@ interface JournalEntry {
 const MemoizedStatGraph = memo(StatGraph);
 
 const HomeClient: React.FC<{ userID: string }> = ({ userID }) => {
-  const router = useRouter();
   const [isPollingOpen, setIsPollingOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState('');
   const [milestoneTitle, setMilestoneTitle] = useState("");
@@ -63,12 +60,13 @@ const HomeClient: React.FC<{ userID: string }> = ({ userID }) => {
   async function getUserName() {
     const response = await getName({id: userID, requestType: 'get_name'});
     const data = await response.json();
-    setUserName(data.name);
+    if (data != null) setUserName(data.name);
   }
 
   useEffect(() => {
     getUserName();
-  }, [userID]);
+  }, [userID, getUserName]);
+
 
   async function checkTodaysPoll() {
     const response = await checkLatestPoll({
@@ -85,15 +83,14 @@ const HomeClient: React.FC<{ userID: string }> = ({ userID }) => {
 
   useEffect(() => {
     checkTodaysPoll();
-  }, [userID]);
+  }, [userID, checkTodaysPoll]);
 
   const [milestones, setMilestones] = useState<{id: string, title: string}[]>([]);
 
   
-  const [moodData, setMoodData] = useState<number[]>([65, 59, 80, 81, 56, 20, 80]);
-  const [efficiencyData, setEfficiencyData] = useState<number[]>([65, 59, 80, 81, 40, 40, 40]);
+  const [moodData, setMoodData] = useState<number[]>([]);
+  const [efficiencyData, setEfficiencyData] = useState<number[]>([]);
   const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([]);
-  const [showJournals, setShowJournals] = useState(false);
 
   // Add time update effect
   useEffect(() => {
@@ -109,6 +106,7 @@ const HomeClient: React.FC<{ userID: string }> = ({ userID }) => {
     return () => clearInterval(interval);
   }, []);
 
+  /*
   // Simulate API call to check if user has logged today
   useEffect(() => {
     const checkDailyLog = async () => {
@@ -127,19 +125,20 @@ const HomeClient: React.FC<{ userID: string }> = ({ userID }) => {
 
     checkDailyLog();
   }, []);
-
+  */
   useEffect(() => {
     const fetchPollData = async () => {
       try {
         const polls = await getPolls({ id: userID, requestType: 'get_polls', timeFrame: 'last_week' });
         const pollData = await polls.json();
-        const last7Polls = pollData.polls.slice(-7);
-        const moodData = last7Polls.map((poll: any) => poll.questions[0].response);
-        const efficiencyData = last7Polls.map((poll: any) => poll.questions[1].response);
-        // Assuming data.polls is an array of poll objects with a date and questions
-        
-        setMoodData(moodData);
-        setEfficiencyData(efficiencyData);
+        if (pollData != null) {
+          const last7Polls = pollData.polls.slice(-7);
+          const moodData: number[] = last7Polls.map((poll: {date: string, questions: {question: string, response: number}[]}) => poll.questions[0].response);
+          const efficiencyData: number[] = last7Polls.map((poll: {date: string, questions: {question: string, response: number}[]}) => poll.questions[1].response);
+          
+          setMoodData(moodData);
+          setEfficiencyData(efficiencyData);
+        }
       } catch (error) {
         console.error('Error fetching poll data:', error);
       }
@@ -154,7 +153,7 @@ const HomeClient: React.FC<{ userID: string }> = ({ userID }) => {
       try {
         const response = await getMilestones({id: userID, requestType: 'get_milestones'});
         const data = await response.json();
-        setMilestones(data.milestones || []);
+        if (data != null) setMilestones(data.milestones || []);
       } catch (error) {
         console.error('Error fetching milestones:', error);
       }
@@ -164,7 +163,7 @@ const HomeClient: React.FC<{ userID: string }> = ({ userID }) => {
         fetchMilestones();
         setNotTriedMilestones(false);
     }
-  }, [userID]);
+  }, [userID, notTriedMilestones]);
 
   // Fetch journals when component mounts
   useEffect(() => {
@@ -172,7 +171,7 @@ const HomeClient: React.FC<{ userID: string }> = ({ userID }) => {
       try {
         const response = await getJournals({id: userID, requestType: 'get_journals'});
         const data = await response.json();
-        setJournalEntries(data.journals || []);
+        if (data != null) setJournalEntries(data.journals || []);
       } catch (error) {
         console.error('Error fetching journals:', error);
         setJournalEntries([]);
@@ -183,7 +182,7 @@ const HomeClient: React.FC<{ userID: string }> = ({ userID }) => {
         fetchJournals();
         setNotTriedJournals(false);
     }
-  }, [userID]);
+  }, [userID, notTriedJournals]);
 
   const handleClose = () => {
     setIsPollingOpen(false);
@@ -191,20 +190,31 @@ const HomeClient: React.FC<{ userID: string }> = ({ userID }) => {
     setHasLoggedToday(true);
   };
   
-  const handleCreateJournalEntry = (entryData: Omit<JournalEntry, 'id' | 'date'>) => {
+  const handleCreateJournalEntry = async (entry: { content: string }) => {
     const newEntry: JournalEntry = {
       id: userID,
-      date: new Date().toISOString(),
-      content: entryData.content,
+      date: new Date().toISOString().split('T')[0],
+      content: entry.content
     };
-    setJournalEntries(prev => [newEntry, ...prev]);
+    if (newEntry.content) {
+      await addJournal({
+        id: userID as string, 
+        requestType: 'add_journal', 
+        journal: {
+          content: entry.content,
+          date: newEntry.date
+        }
+      });
+      setJournalEntries(prev => [newEntry, ...prev]);
+    }
   };
 
-  const handlePollSubmit = async (pollData: any) => {
+
+  const handlePollSubmit = async (pollData: {poll: {date: string, questions: {question: string, response: number}[]}, journal: string}) => {
     try {
       // Add poll
       await addPoll({
-        id: userID, 
+        id: userID as string, 
         requestType: 'add_poll', 
         poll: pollData.poll
       });
@@ -212,14 +222,21 @@ const HomeClient: React.FC<{ userID: string }> = ({ userID }) => {
       // Add journal if there's content
       if (pollData.journal) {
         await addJournal({
-          id: userID, 
+          id: userID as string, 
           requestType: 'add_journal', 
           journal: {
             content: pollData.journal,
             date: pollData.poll.date
           }
         });
+        setJournalEntries(prev => [{
+          id: userID,
+          content: pollData.journal,
+          date: new Date().toISOString().split('T')[0]
+        }, ...prev])
       }
+      
+
 
       // Update local state
       setHasLoggedToday(true);
@@ -282,6 +299,8 @@ const HomeClient: React.FC<{ userID: string }> = ({ userID }) => {
         date: milestoneDate
       }
     });
+
+    setMilestones(prev => [...prev, {id: userID, title: milestoneTitle}]);
   };
 
   const handleRemoveMilestone = async (e: React.FormEvent) => {
@@ -335,16 +354,9 @@ const HomeClient: React.FC<{ userID: string }> = ({ userID }) => {
           {currentTime}
         </div>
       </div>
-      <div className="relative z-10">
+      <div className="flex flex-col z-30">
         <Navbar />
-        {isPollingOpen && (
-          <div 
-            className="fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity duration-300" 
-            style={{ opacity: isPollingOpen ? 1 : 0 }}
-          />
-        )}
-        
-        <div className={`flex h-[calc(100vh-96px)] ${isPollingOpen ? 'pointer-events-none' : ''} z-30 items-center justify-center`}>
+        <div className={`flex ${isPollingOpen ? 'pointer-events-none' : ''} z-30 items-center justify-center`}>
           <div className="flex justify-between w-full p-8">
             <div className="flex-1 flex flex-col items-start">
               <div className="bg-[#3a3a3a]/90 rounded-xl border-white/20 hover:border-white/50 border-2 p-4 pl-0">
@@ -354,7 +366,7 @@ const HomeClient: React.FC<{ userID: string }> = ({ userID }) => {
             </div>
             <div className="flex-1 flex flex-col items-center gap-4">
               <p className="text-2xl font-bold text-white animate-fade duration-300 font-['Caveat'] text-center">
-                Hello {userName}! {quote}
+                Hello{userName === null ? "" : " " + userName}! {quote}
               </p>
               <Clock goodStart={20} goodPercent={30} />
               <div className={`flex flex-col gap-6 transition-opacity duration-1000 ${showButtons ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
@@ -473,7 +485,6 @@ const HomeClient: React.FC<{ userID: string }> = ({ userID }) => {
           isOpen={isPollingOpen} 
           onClose={() => setIsPollingOpen(false)}
           onSubmit={handlePollSubmit}
-          userID={userID}
         />
         <Journal 
           isOpen={isJournalOpen} 

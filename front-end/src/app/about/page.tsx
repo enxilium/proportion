@@ -77,7 +77,7 @@ export default function About() {
               </Typography>
 
               <Typography paragraph>
-                Proportion is more than just a study app – it's a tool designed to transform 
+                Proportion is more than just a study app – it&apos;s a tool designed to transform 
                 your perspective on time management. We believe that understanding how to 
                 value your time is the first step toward making better decisions about how 
                 you spend it.
@@ -96,7 +96,7 @@ export default function About() {
               </Typography>
 
               <Typography paragraph sx={{ mt: 3 }}>
-                Whether you're a student, professional, or someone looking to make the most 
+                Whether you&apos;re a student, professional, or someone looking to make the most 
                 of their time, Proportion provides the insights and tools you need to make 
                 every moment count.
               </Typography>

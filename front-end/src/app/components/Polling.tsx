@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Slider from '@mui/material/Slider';
 import { styled } from '@mui/material/styles';
-import { useRouter } from 'next/navigation';
 
 const questions = [
   {
@@ -50,10 +49,9 @@ const StyledSlider = styled(Slider)({
   },
 });
 
-const PollingModal = ({ isOpen, onClose, onSubmit, userID }: { 
+const PollingModal = ({ isOpen, onClose, onSubmit }: { 
   isOpen: boolean; 
   onClose: () => void;
-  userID: string;
   onSubmit: (data: { 
     poll: {
       date: string;
@@ -65,7 +63,6 @@ const PollingModal = ({ isOpen, onClose, onSubmit, userID }: {
     journal: string;
   }) => void;
 }) => {
-  const router = useRouter();
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [sliderValue, setSliderValue] = useState(50);
   const [currentEmojiIndex, setCurrentEmojiIndex] = useState(2);
@@ -170,7 +167,7 @@ const PollingModal = ({ isOpen, onClose, onSubmit, userID }: {
 
     window.addEventListener('keypress', handleKeyPress);
     return () => window.removeEventListener('keypress', handleKeyPress);
-  }, [currentQuestion, onClose]);
+  }, [currentQuestion, onClose, handleNext]);
 
   useEffect(() => {
     if (questions[currentQuestion].type === 'slider') {
@@ -184,7 +181,7 @@ const PollingModal = ({ isOpen, onClose, onSubmit, userID }: {
         [questions[currentQuestion].id]: ''
       }));
     }
-  }, [currentQuestion]);
+  }, [currentQuestion, questions, sliderValue]);
 
   if (!isOpen) return null;
 

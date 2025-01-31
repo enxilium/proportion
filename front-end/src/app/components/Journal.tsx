@@ -2,7 +2,6 @@
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 interface JournalEntry {
@@ -27,7 +26,7 @@ export default function Journal({ isOpen, onClose, entries, onCreateEntry }: Jou
   });
 
   const handleCreateEntry = () => {
-    if (!newEntry.title || !newEntry.content) return;
+    if (!newEntry.content) return;
 
     onCreateEntry({
       content: newEntry.content
@@ -68,15 +67,6 @@ export default function Journal({ isOpen, onClose, entries, onCreateEntry }: Jou
 
         {isCreating && (
           <div className="space-y-4">
-            <div>
-              <Label htmlFor="title">Title</Label>
-              <Input
-                id="title"
-                value={newEntry.title}
-                onChange={(e) => setNewEntry({ ...newEntry, title: e.target.value })}
-                className="mt-1"
-              />
-            </div>
             <div>
               <Label htmlFor="content">Content</Label>
               <textarea

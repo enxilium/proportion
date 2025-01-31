@@ -1,10 +1,32 @@
 import type { NextRequest } from "next/server";
 import { auth0 } from "./lib/auth0";
+import { addUser, getName } from "./app/components/apiCaller";
 
 export async function middleware(request: NextRequest) {
   const session = await auth0.getSession(request);
   if (request.nextUrl.pathname === "/") {
     if (session) {
+      const storedName = request.cookies.get('onboardingName');
+      if (storedName?.value) {
+        try {
+          const response = await getName({
+            id: session.user.email as string,
+            requestType: 'get_name'
+          });
+          const userData = await response.json();
+          
+          if (!userData) {
+            await addUser({
+              id: session.user.email as string,
+              requestType: 'add_user',
+              name: storedName.value
+            });
+          }
+          request.cookies.delete('onboardingName');
+        } catch (error) {
+          console.error('Error checking/creating user:', error);
+        }
+      }
       return Response.redirect(new URL("/home", request.url));
     }
   } else if(request.nextUrl.pathname === "/home" || request.nextUrl.pathname === "/analytics") {

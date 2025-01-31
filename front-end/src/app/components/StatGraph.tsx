@@ -1,11 +1,7 @@
 "use client"
-
-import { useEffect, useState } from "react";
 import React from 'react';
 import dynamic from 'next/dynamic';
 import 'chart.js/auto';
-import { color } from "chart.js/helpers";
-import { rgbToHex } from "@mui/material";
 
 interface StatGraphProps {
   data: {
