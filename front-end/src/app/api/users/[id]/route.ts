@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { Condition, ObjectId } from 'mongodb';
 import client, { connectToDatabase } from '@/lib/mongodb';
 import { NextRequest } from 'next/server';
 import { UpdateFilter, Document } from 'mongodb';

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Slider from '@mui/material/Slider';
 import { styled } from '@mui/material/styles';
@@ -147,12 +147,12 @@ const PollingModal = ({ isOpen, onClose, onSubmit }: {
     }));
   };
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion(prev => prev + 1);
       setSliderValue(50);
     }
-  };
+  }, [currentQuestion]);
 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
@@ -181,7 +181,7 @@ const PollingModal = ({ isOpen, onClose, onSubmit }: {
         [questions[currentQuestion].id]: ''
       }));
     }
-  }, [currentQuestion, questions, sliderValue]);
+  }, [currentQuestion, sliderValue]);
 
   if (!isOpen) return null;
 
