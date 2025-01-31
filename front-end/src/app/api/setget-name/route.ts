@@ -14,9 +14,6 @@ export async function POST(request: Request) {
     httpOnly: true
   });
 
-  console.log(cookieStore.get('onboardingName'))
-  console.log(cookieStore.get('onboardingName')?.value)
-
 
   return NextResponse.json({ success: true });
 
