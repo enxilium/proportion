@@ -17,6 +17,7 @@ COPY public ./public
 # store secrets in secrets manager on aws
 ENV AUTH0_DOMAIN='dev-6gyvmkq6u7zm466e.us.auth0.com'
 ENV AUTH0_CLIENT_ID='6Lv7WYOfijtF4Y8Rx3ctQCRsoqxdt89c'
+ENV APP_BASE_URL='https://proportionai.xyz'
 
 EXPOSE 3000
 
