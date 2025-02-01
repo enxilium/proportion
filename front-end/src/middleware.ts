@@ -1,6 +1,5 @@
 import type { NextRequest } from "next/server";
 import { auth0 } from "./lib/auth0";
-import { addUser, getName } from "./app/components/apiCaller";
 
 export async function middleware(request: NextRequest) {
   const session = await auth0.getSession(request);
