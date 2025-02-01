@@ -2,7 +2,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
-import { setNameCookie } from '@/app/components/apiCaller';
 
 interface Question {
   id: number;
@@ -60,34 +59,36 @@ export default function Home() {
     // Remove this timeout since we'll control visibility with CSS
     setShowNameInput(true);
   }, []);
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const handleKeyDown = async (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
-      if (currentQuestion === -1) {
+      if (currentQuestion === -1) {  // Name input handling
+        if (e.shiftKey) {
+          router.push('/login');
+          return;
+        }
         if (inputValue.trim()) {
           localStorage.setItem('onboardingName', inputValue.trim());
           setInputValue('');
           setCurrentQuestion(0);
         }
-        return;
-      }
-      const num = Number(inputValue);
-      const currentQ = questions[currentQuestion];
-      const minValue = currentQ.min ?? -Infinity;
-      const maxValue = currentQ.max ?? Infinity;
-      
-      if (num >= minValue && num <= maxValue) {
-        setAnswers([...answers, num]);
-        setInputValue('');
-        setError('');
+      } else {  // Question handling
+        const question = questions[currentQuestion];
+        const value = Number(inputValue);
         
-        if (currentQuestion < questions.length - 1) {
-          setCurrentQuestion(currentQuestion + 1);
+        if (value >= (question.min || 0) && value <= (question.max || Infinity)) {
+          setAnswers([...answers, value]);
+          setInputValue('');
+          setError('');
+          
+          if (currentQuestion === questions.length - 1) {
+            setShowCandles(true);
+            startCandleAnimation();
+          } else {
+            setCurrentQuestion(currentQuestion + 1);
+          }
         } else {
-          setShowCandles(true);
-          startCandleAnimation();
+          setError(`Please enter a number between ${question.min} and ${question.max}`);
         }
-      } else {
-        setError(`Please enter a number between ${minValue} and ${maxValue}`);
       }
     }
   };
@@ -241,22 +242,7 @@ export default function Home() {
                   className="w-full font-caveat bg-transparent border-b-2 border-current text-3xl text-center focus:outline-none"
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
-                  onKeyDown={async (e) => {
-                    if (e.key === 'Enter') {
-                      if (e.shiftKey) {
-                        router.push('/login');
-                        return;
-                      }
-                      if (inputValue.trim()) {
-                        await setNameCookie({name: inputValue.trim(), requestType: 'set_name_cookie', baseUrl: window.location.origin}); 
-                        setInputValue('');
-                        setCurrentQuestion(0);
-                      }
-
-
-
-                    }
-                  }}
+                  onKeyDown={handleKeyDown}
                   autoFocus
                 />
                 <motion.p 

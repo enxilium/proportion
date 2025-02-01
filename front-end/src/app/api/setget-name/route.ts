@@ -8,8 +8,8 @@ export async function POST(request: Request) {
     name: 'onboardingName',
     value: name,
     path: '/',
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
+    secure: true,
+    sameSite: 'none',
     maxAge: 60 * 60 * 24,
     httpOnly: true
   });

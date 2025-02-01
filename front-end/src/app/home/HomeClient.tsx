@@ -27,7 +27,7 @@ import {
 import Journal from "@/app/components/Journal";
 import { Chat } from "../components/Chat";
 import { getGeminiResponse } from "@/lib/gemini";
-import { getName, getPolls, checkLatestPoll, addPoll, addMilestone, deleteMilestone, addJournal, getMilestones, getJournals } from '@/app/components/apiCaller';
+import { getName, getPolls, checkLatestPoll, addPoll, addMilestone, deleteMilestone, addJournal, getMilestones, getJournals, addUser } from '@/app/components/apiCaller';
 import { memo } from 'react';
 
 
@@ -58,14 +58,44 @@ const HomeClient: React.FC<{ userID: string }> = ({ userID }) => {
 
   
   const getUserName = useCallback(async () => {
-    const response = await getName({id: userID, requestType: 'get_name', baseUrl: window.location.origin});
-    const data = await response.json();
-    if (data != null) setUserName(data.name);
+    // Check localStorage first
+    const storedName = localStorage.getItem('onboardingName');
+    if (storedName) {
+      // If we have a name in localStorage, add it to the database
+      try {
+        await addUser({
+          id: userID,
+          requestType: 'add_user',
+          name: storedName,
+          baseUrl: window.location.origin
+        });
+        setUserName(storedName);
+        localStorage.removeItem('onboardingName');
+        return;
+      } catch (error) {
+        console.error('Error adding user:', error);
+      }
+    }
+
+    // If no name in localStorage, get it from the database
+    try {
+      const response = await getName({
+        id: userID,
+        requestType: 'get_name',
+        baseUrl: window.location.origin
+      });
+      const data = await response.json();
+      if (data?.name) {
+        setUserName(data.name);
+      }
+    } catch (error) {
+      console.error('Error getting user name:', error);
+    }
   }, [userID]);
 
   useEffect(() => {
     getUserName();
-  }, [userID, getUserName]);
+  }, [getUserName]);
 
 
   const checkTodaysPoll = useCallback(async () => {

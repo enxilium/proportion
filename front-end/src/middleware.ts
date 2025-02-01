@@ -6,30 +6,12 @@ export async function middleware(request: NextRequest) {
   const session = await auth0.getSession(request);
   if (request.nextUrl.pathname === "/") {
     if (session) {
-      const storedName = request.cookies.get('onboardingName');
-      if (storedName?.value) {
-        try {
-          const response = await getName({
-            id: session.user.email as string,
-            requestType: 'get_name',
-            baseUrl: `${request.nextUrl.protocol}//${request.nextUrl.host.split('/unknown')[0]}`
-          });
-          const userData = await response.json();
-          
-          if (!userData) {
-            await addUser({
-              id: session.user.email as string,
-              requestType: 'add_user',
-              name: storedName.value,
-              baseUrl: `${request.nextUrl.protocol}//${request.nextUrl.host.split('/unknown')[0]}`
-            });
-          }
-          request.cookies.delete('onboardingName');
-        } catch (error) {
-          console.error('Error checking/creating user:', error);
-        }
+      try {
+
+        return Response.redirect(new URL("/home", request.url));
+      } catch (error) {
+        console.error('Error checking user:', error);
       }
-      return Response.redirect(new URL("/home", request.url));
     }
   } else if(request.nextUrl.pathname === "/home" || request.nextUrl.pathname === "/analytics") {
     if (!session) {
