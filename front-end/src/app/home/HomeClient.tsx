@@ -38,6 +38,11 @@ interface JournalEntry {
     content: string;
   }
 
+interface PollQuestion {
+  question: string;
+  response: number;
+}
+
 // Memoize the StatGraph component
 const MemoizedStatGraph = memo(StatGraph);
 
@@ -63,17 +68,33 @@ const HomeClient: React.FC<{ userID: string }> = ({ userID }) => {
     if (storedName) {
       // If we have a name in localStorage, add it to the database
       try {
-        await addUser({
+        const response = await getName({
           id: userID,
-          requestType: 'add_user',
-          name: storedName,
+          requestType: 'get_name',
           baseUrl: window.location.origin
         });
-        setUserName(storedName);
-        localStorage.removeItem('onboardingName');
-        return;
+        const data = await response.json();
+        if (data?.name) {
+          setUserName(data.name);
+          return;
+        }
       } catch (error) {
-        console.error('Error adding user:', error);
+        console.error('Error getting user name:', error);
+      }
+      if (userName === "") {
+        try {
+          await addUser({
+            id: userID,
+            requestType: 'add_user',
+            name: storedName,
+            baseUrl: window.location.origin
+          });
+          setUserName(storedName);
+          localStorage.removeItem('onboardingName');
+          return;
+        } catch (error) {
+            console.error('Error adding user:', error);
+        }
       }
     }
 
@@ -117,8 +138,8 @@ const HomeClient: React.FC<{ userID: string }> = ({ userID }) => {
   const [milestones, setMilestones] = useState<{id: string, title: string}[]>([]);
 
   
-  const [moodData, setMoodData] = useState<number[]>([]);
-  const [efficiencyData, setEfficiencyData] = useState<number[]>([]);
+  const [moodData, setMoodData] = useState<number[]>([0, 0, 0, 0, 0, 0, 0]);
+  const [efficiencyData, setEfficiencyData] = useState<number[]>([0, 0, 0, 0, 0, 0, 0]);
   const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([]);
 
   // Add time update effect
@@ -160,14 +181,39 @@ const HomeClient: React.FC<{ userID: string }> = ({ userID }) => {
       try {
         const polls = await getPolls({ id: userID, requestType: 'get_polls', timeFrame: 'last_week' });
         const pollData = await polls.json();
-        if (pollData != null) {
-          const last7Polls = pollData.polls.slice(-7);
-          const moodData: number[] = last7Polls.map((poll: {date: string, questions: {question: string, response: number}[]}) => poll.questions[0].response);
-          const efficiencyData: number[] = last7Polls.map((poll: {date: string, questions: {question: string, response: number}[]}) => poll.questions[1].response);
-          
-          setMoodData(moodData);
-          setEfficiencyData(efficiencyData);
+        
+        // Create an array of the last 7 dates
+        const last7Days = Array.from({length: 7}, (_, i) => {
+          const date = new Date();
+          date.setDate(date.getDate() - (6 - i));
+          return date.toISOString().split('T')[0];
+        });
+
+        // Initialize arrays with zeros
+        const moodData: number[] = new Array(7).fill(0);
+        const efficiencyData: number[] = new Array(7).fill(0);
+
+        if (pollData != null && pollData.polls) {
+          // Create a map of dates to poll data for easy lookup
+          const pollMap = new Map<string, PollQuestion[]>(
+            pollData.polls.map((poll: {date: string, questions: PollQuestion[]}) => 
+              [poll.date, poll.questions]
+            )
+          );
+
+          // Fill in actual poll data where it exists
+          last7Days.forEach((date, index) => {
+            const pollForDate = pollMap.get(date);
+            if (pollForDate) {
+              moodData[index] = pollForDate[0]?.response || 0;
+              efficiencyData[index] = pollForDate[1]?.response || 0;
+            }
+            // If no poll exists for this date, it remains 0
+          });
         }
+        
+        setMoodData(moodData);
+        setEfficiencyData(efficiencyData);
       } catch (error) {
         console.error('Error fetching poll data:', error);
       }
@@ -248,7 +294,14 @@ const HomeClient: React.FC<{ userID: string }> = ({ userID }) => {
         poll: pollData.poll
       });
 
-      // Add journal if there's content
+      setMoodData(prev => {
+        return [...prev.slice(0, -1), pollData.poll.questions[0].response];
+      });
+
+      setEfficiencyData(prev => {
+        return [...prev.slice(0, -1), pollData.poll.questions[1].response];
+      });
+
       if (pollData.journal) {
         await addJournal({
           id: userID as string, 
@@ -383,7 +436,7 @@ const HomeClient: React.FC<{ userID: string }> = ({ userID }) => {
       <div className="flex flex-col z-30">
         <Navbar />
         <div className={`flex ${isPollingOpen ? 'pointer-events-none' : ''} z-30 items-center justify-center`}>
-          <div className="flex justify-between w-full p-8">
+          <div className="flex justify-between w-full py-3 px-8">
             <div className="flex-1 flex flex-col items-start">
               <div className="bg-[#3a3a3a]/90 rounded-xl border-white/20 hover:border-white/50 border-2 p-4 pl-0">
                 <MemoizedStatGraph data={data} title="Mood Tracker" />

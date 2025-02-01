@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation'
 export const Navbar:React.FC = () => {
     const router = useRouter();
     return (
-        <div className="navbar h-16 hover:bg-white/30 hover:backdrop-blur-sm flex flex-row items-center justify-between w-full z-30">
+        <div className="navbar h-14 hover:bg-white/30 hover:backdrop-blur-sm flex flex-row items-center justify-between w-full z-30">
             <Link href="/home">
                 <Image 
                     className="ml-3 scale-40 transition-transform duration-300 hover:scale-105" 
