@@ -22,30 +22,4 @@ The "I" in ProportionAl is actually an L, a little play on letters if you will.
 
 ## Tech Stack
 
-### Frontend
-- **Framework**: Next.js 15 (React-based)
-- **Language**: TypeScript/JavaScript
-- **UI Libraries**:
-  - Tailwind CSS
-  - Material UI
-  - Radix UI
-  - DaisyUI
-  - Framer Motion
-- **Data Visualization**: Chart.js with React-ChartJS-2
-- **Authentication**: Auth0
-
-### Backend
-- **Framework**: Next.js (Server Components & API Routes)
-- **Runtime Environment**: Node.js 20
-- **Database**: MongoDB Atlas
-- **AI Integration**: Google Generative AI
-
-### Infrastructure & DevOps
-- **Containerization**: Docker
-- **Cloud Platform**: AWS
-- **Version Control**: Git
-- **Infrastructure as Code**: Terraform
-- **CI/CD**: GitHub Actions
-
-
-
+![ProportionTechStack](readmeImgs/ProportionTechStack.png)
